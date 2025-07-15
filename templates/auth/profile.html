@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>プロフィール - 試験問題管理システム</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-graduation-cap me-2"></i>
+                試験問題管理システム
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">
+                    {{ session.full_name }}さん ({{ session.user_type }})
+                </span>
+                <a class="btn btn-outline-light btn-sm" href="{{ url_for('logout') }}">
+                    <i class="fas fa-sign-out-alt me-1"></i>ログアウト
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-user me-2"></i>
+                            プロフィール情報
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">ユーザーID:</th>
+                                        <td>{{ user.user_id }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>氏名:</th>
+                                        <td>{{ user.full_name or '未設定' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>メールアドレス:</th>
+                                        <td>{{ user.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>ユーザー種別:</th>
+                                        <td>
+                                            <span class="badge bg-{{ 'danger' if user.user_type == 'admin' else 'warning' if user.user_type == 'staff' else 'success' if user.user_type == 'faculty' else 'primary' }}">
+                                                {% if user.user_type == 'admin' %}管理者
+                                                {% elif user.user_type == 'staff' %}事務員
+                                                {% elif user.user_type == 'faculty' %}教員
+                                                {% elif user.user_type == 'student' %}学生
+                                                {% else %}{{ user.user_type }}
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th width="40%">登録日時:</th>
+                                        <td>{{ user.created_at[:19] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>最終ログイン:</th>
+                                        <td>
+                                            {% if user.last_login_at %}
+                                                {{ user.last_login_at[:19] }}
+                                            {% else %}
+                                                初回ログイン
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>現在のセッション:</th>
+                                        <td>{{ session.login_time[:19] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>ログイン保持:</th>
+                                        <td>
+                                            {% if session.remember_me %}
+                                                <span class="text-success">
+                                                    <i class="fas fa-check me-1"></i>有効（30日間）
+                                                </span>
+                                            {% else %}
+                                                <span class="text-info">
+                                                    <i class="fas fa-clock me-1"></i>通常（24時間）
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            セキュリティ
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary btn-sm" disabled>
+                                <i class="fas fa-key me-2"></i>
+                                パスワード変更
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" disabled>
+                                <i class="fas fa-mobile-alt me-2"></i>
+                                二段階認証
+                            </button>
+                        </div>
+                        <small class="text-muted mt-3 d-block">
+                            <i class="fas fa-info-circle me-1"></i>
+                            これらの機能は今後実装予定です
+                        </small>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-link me-2"></i>
+                            クイックアクセス
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('exams') }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-file-alt me-2"></i>
+                                試験一覧
+                            </a>
+                            <a href="{{ url_for('subjects') }}" class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-book me-2"></i>
+                                科目一覧
+                            </a>
+                            <a href="{{ url_for('professors') }}" class="btn btn-outline-info btn-sm">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>
+                                教員一覧
+                            </a>
+                            {% if session.user_type in ['admin', 'staff'] %}
+                                <a href="{{ url_for('statistics') }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-chart-bar me-2"></i>
+                                    統計情報
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-history me-2"></i>
+                            最近のログイン履歴
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        {% if login_history %}
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>日時</th>
+                                            <th>結果</th>
+                                            <th>IPアドレス</th>
+                                            <th>詳細</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for attempt in login_history %}
+                                            <tr>
+                                                <td>{{ attempt.timestamp[:19] }}</td>
+                                                <td>
+                                                    {% if attempt.success %}
+                                                        <span class="badge bg-success">成功</span>
+                                                    {% else %}
+                                                        <span class="badge bg-danger">失敗</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <code>{{ attempt.ip_address or '不明' }}</code>
+                                                </td>
+                                                <td>
+                                                    {% if attempt.failure_reason %}
+                                                        <small class="text-muted">{{ attempt.failure_reason }}</small>
+                                                    {% else %}
+                                                        <small class="text-success">正常ログイン</small>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">ログイン履歴がありません。</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

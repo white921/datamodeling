@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}試験追加 - 試験問題管理システム{% endblock %}
+
+{% block content %}
+<!-- パンくずリスト -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">ホーム</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('exams') }}">試験一覧</a></li>
+        <li class="breadcrumb-item active">試験追加</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3><i class="fas fa-plus-circle"></i> 新しい試験の追加</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('exam_add_execute') }}" enctype="multipart/form-data">
+                    
+                    <!-- 基本情報 -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="border-bottom pb-2 mb-3">基本情報</h5>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="subject_id" class="form-label">科目 <span class="text-danger">*</span></label>
+                            <select class="form-select" id="subject_id" name="subject_id" required>
+                                <option value="">科目を選択してください</option>
+                                {% if subjects %}
+                                    {% for subject in subjects %}
+                                    <option value="{{ subject.subject_id }}">
+                                        {{ subject.faculty_name }} - {{ subject.department_name }} - {{ subject.subject_name }}
+                                    </option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <label for="exam_type_id" class="form-label">試験種別 <span class="text-danger">*</span></label>
+                            <select class="form-select" id="exam_type_id" name="exam_type_id" required>
+                                <option value="">試験種別を選択</option>
+                                {% if exam_types %}
+                                    {% for exam_type in exam_types %}
+                                    <option value="{{ exam_type.exam_type_id }}">{{ exam_type.exam_type_name }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <label for="exam_year" class="form-label">年度 <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="exam_year" name="exam_year" 
+                                   min="2020" max="2030" value="{{ current_year }}" required>
+                        </div>
+                    </div>
+                    
+                    <!-- 担当教員 -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="border-bottom pb-2 mb-3">担当教員</h5>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">担当教員 <span class="text-danger">*</span></label>
+                            <div class="row">
+                                {% if professors %}
+                                    {% for professor in professors %}
+                                    <div class="col-md-4 col-lg-3 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   name="professor_ids" value="{{ professor.professor_id }}" 
+                                                   id="prof_{{ professor.professor_id }}">
+                                            <label class="form-check-label" for="prof_{{ professor.professor_id }}">
+                                                {{ professor.professor_name }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 注意事項 -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="border-bottom pb-2 mb-3">試験詳細</h5>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="instructions" class="form-label">注意事項・実施要領</label>
+                            <textarea class="form-control" id="instructions" name="instructions" 
+                                      rows="4" placeholder="試験実施時の注意事項や特別な指示事項があれば入力してください"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- 確認・送信 -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6>入力内容をご確認ください</h6>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="confirm_check" required>
+                                        <label class="form-check-label" for="confirm_check">
+                                            入力内容に間違いがないことを確認しました <span class="text-danger">*</span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-save"></i> 試験を追加
+                                        </button>
+                                        <a href="{{ url_for('exams') }}" class="btn btn-outline-danger">
+                                            <i class="fas fa-times"></i> キャンセル
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

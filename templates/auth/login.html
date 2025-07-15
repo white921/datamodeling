@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログイン - 試験問題管理システム</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .login-header {
+            background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .login-form {
+            padding: 2rem;
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+        }
+        .btn-login {
+            background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+        .input-group-text {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-right: none;
+        }
+        .input-group .form-control {
+            border-left: none;
+        }
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+        .keio-logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: #3b82f6;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .system-info {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        .demo-accounts {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fef3c7;
+            border-radius: 10px;
+            border-left: 4px solid #f59e0b;
+        }
+        .demo-accounts h6 {
+            color: #92400e;
+            margin-bottom: 0.5rem;
+        }
+        .demo-accounts small {
+            color: #78350f;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="login-container">
+                    <div class="login-header">
+                        <div class="keio-logo">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="mb-0">試験問題管理システム</h3>
+                        <p class="mb-0 mt-2">慶應義塾大学</p>
+                    </div>
+                    
+                    <div class="login-form">
+                        <!-- フラッシュメッセージ -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ 'danger' if category == 'error' else 'warning' if category == 'warning' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show" role="alert">
+                                        <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'exclamation-circle' if category == 'warning' else 'check-circle' if category == 'success' else 'info-circle' }} me-2"></i>
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                        
+                        <form method="POST" action="{{ url_for('login_execute') }}">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">メールアドレス</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input 
+                                        type="email" 
+                                        class="form-control" 
+                                        id="email" 
+                                        name="email" 
+                                        placeholder="username@keio.jp"
+                                        required
+                                        autocomplete="email"
+                                    >
+                                </div>
+                                <small class="text-muted">keio.jpドメインのメールアドレスを入力してください</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">パスワード</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input 
+                                        type="password" 
+                                        class="form-control" 
+                                        id="password" 
+                                        name="password" 
+                                        placeholder="パスワードを入力"
+                                        required
+                                        autocomplete="current-password"
+                                    >
+                                    <button 
+                                        class="btn btn-outline-secondary" 
+                                        type="button" 
+                                        id="togglePassword"
+                                        title="パスワードを表示/非表示"
+                                    >
+                                        <i class="fas fa-eye" id="toggleIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input 
+                                    type="checkbox" 
+                                    class="form-check-input" 
+                                    id="remember_me" 
+                                    name="remember_me"
+                                >
+                                <label class="form-check-label" for="remember_me">
+                                    ログイン状態を保持する（30日間）
+                                </label>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-login">
+                                    <i class="fas fa-sign-in-alt me-2"></i>
+                                    ログイン
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="system-info">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <small>
+                                    <i class="fas fa-shield-alt me-1"></i>
+                                    セキュアログイン
+                                </small>
+                                <small>
+                                    <i class="fas fa-clock me-1"></i>
+                                    セッション: 24時間
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- デモアカウント情報（開発環境用） -->
+                        <div class="demo-accounts">
+                            <h6><i class="fas fa-key me-1"></i>デモアカウント</h6>
+                            <small><strong>管理者:</strong> admin@keio.jp / admin123</small>
+                            <small><strong>事務員:</strong> staff@keio.jp / staff123</small>
+                            <small><strong>教員:</strong> tanaka@keio.jp / faculty123</small>
+                            <small><strong>学生:</strong> student1@keio.jp / student123</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // パスワード表示/非表示切り替え
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        });
+        
+        // フォーム送信時のローディング状態
+        document.querySelector('form').addEventListener('submit', function() {
+            const submitBtn = document.querySelector('.btn-login');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>ログイン中...';
+            submitBtn.disabled = true;
+        });
+        
+        // メールアドレス入力時のkeio.jpドメインチェック
+        document.getElementById('email').addEventListener('blur', function() {
+            const email = this.value.toLowerCase();
+            if (email && !email.endsWith('@keio.jp')) {
+                this.setCustomValidity('keio.jpドメインのメールアドレスを入力してください');
+                this.reportValidity();
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    </script>
+</body>
+</html>

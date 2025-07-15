@@ -1,0 +1,36 @@
+{% extends "home.html" %}
+
+{% block title %}ページが見つかりません - 試験問題管理システム{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="text-center">
+            <div class="mb-4">
+                <i class="fas fa-search fa-5x text-muted"></i>
+            </div>
+            <h1 class="display-4 text-muted">404</h1>
+            <h2 class="mb-4">ページが見つかりません</h2>
+            <p class="lead text-muted mb-4">
+                お探しのページは存在しないか、移動した可能性があります。<br>
+                URLを確認するか、下記のリンクから目的のページにアクセスしてください。
+            </p>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                <a href="{{ url_for('index') }}" class="btn btn-primary me-md-2">
+                    <i class="fas fa-home"></i> ホームページ
+                </a>
+                <a href="{{ url_for('exams') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-file-alt"></i> 試験一覧
+                </a>
+            </div>
+            
+            <div class="mt-4">
+                <small class="text-muted">
+                    問題が解決しない場合は、システム管理者にお問い合わせください。
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

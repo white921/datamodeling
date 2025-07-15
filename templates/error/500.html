@@ -1,0 +1,46 @@
+{% extends "home.html" %}
+
+{% block title %}サーバーエラー - 試験問題管理システム{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="text-center">
+            <div class="mb-4">
+                <i class="fas fa-exclamation-triangle fa-5x text-danger"></i>
+            </div>
+            <h1 class="display-4 text-danger">500</h1>
+            <h2 class="mb-4">サーバーエラー</h2>
+            <p class="lead text-muted mb-4">
+                申し訳ございません。サーバー内部でエラーが発生しました。<br>
+                しばらく時間をおいてから再度お試しください。
+            </p>
+            
+            <div class="alert alert-warning">
+                <h6><i class="fas fa-info-circle"></i> 対処方法</h6>
+                <ul class="list-unstyled mb-0">
+                    <li>• ページを再読み込みしてください</li>
+                    <li>• 時間をおいて再度アクセスしてください</li>
+                    <li>• 問題が続く場合は管理者にご連絡ください</li>
+                </ul>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                <button onclick="window.location.reload()" class="btn btn-warning me-md-2">
+                    <i class="fas fa-redo"></i> ページを再読み込み
+                </button>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-home"></i> ホームページ
+                </a>
+            </div>
+            
+            <div class="mt-4">
+                <small class="text-muted">
+                    エラーコード: 500 - Internal Server Error<br>
+                    継続的な問題については管理者にお問い合わせください。
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

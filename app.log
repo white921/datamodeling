@@ -1,0 +1,416 @@
+2025-07-15 11:31:15,087 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-15 11:31:15,089 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 11:31:15,163 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 11:31:16,222 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 11:31:16,274 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 11:31:35,491 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\anaconda3\\Lib\\site-packages\\flask\\app.py', reloading
+2025-07-15 11:31:35,499 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\anaconda3\\Lib\\site-packages\\flask\\templating.py', reloading
+2025-07-15 11:31:35,499 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\anaconda3\\Lib\\site-packages\\jinja2\\environment.py', reloading
+2025-07-15 11:31:35,509 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\anaconda3\\Lib\\site-packages\\werkzeug\\routing\\map.py', reloading
+2025-07-15 11:31:35,539 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:31:35] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-07-15 11:31:35,844 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:31:35] "GET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2025-07-15 11:31:35,848 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:31:35] "GET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2025-07-15 11:31:35,889 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:31:35] "GET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2025-07-15 11:31:35,932 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:31:35] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-07-15 11:31:36,992 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 11:31:38,150 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 11:31:38,188 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 11:31:46,132 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:31:46] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-07-15 11:31:46,392 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:31:46] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-07-15 11:31:46,404 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:31:46] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-07-15 11:31:46,434 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:31:46] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-07-15 11:31:48,712 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:31:48] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-07-15 11:31:48,736 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:31:48] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-07-15 11:31:48,736 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:31:48] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-07-15 11:31:48,772 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:31:48] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-07-15 11:31:48,813 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:31:48] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-07-15 11:32:34,412 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 11:32:34,431 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 11:32:35,538 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 11:32:36,714 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 11:32:36,754 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 11:33:01,167 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 11:33:01,171 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 11:33:02,255 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 11:33:03,452 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 11:33:03,506 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 11:33:16,568 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-15 11:33:16,568 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 11:33:16,624 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 11:33:17,695 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 11:33:17,742 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 11:33:24,443 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:33:24] "GET / HTTP/1.1" 200 -
+2025-07-15 11:33:24,502 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:33:24] "[33mGET /static/js/main.js HTTP/1.1[0m" 404 -
+2025-07-15 11:33:24,502 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:33:24] "[33mGET /static/css/style.css HTTP/1.1[0m" 404 -
+2025-07-15 11:33:28,224 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:33:28] "GET / HTTP/1.1" 200 -
+2025-07-15 11:33:28,252 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:33:28] "[33mGET /static/js/main.js HTTP/1.1[0m" 404 -
+2025-07-15 11:33:28,256 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:33:28] "[33mGET /static/css/style.css HTTP/1.1[0m" 404 -
+2025-07-15 11:33:34,777 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:33:34] "GET /exams HTTP/1.1" 200 -
+2025-07-15 11:33:34,802 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:33:34] "[33mGET /static/css/style.css HTTP/1.1[0m" 404 -
+2025-07-15 11:33:34,802 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:33:34] "[33mGET /static/js/main.js HTTP/1.1[0m" 404 -
+2025-07-15 11:33:38,067 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:33:38] "GET /exam-add HTTP/1.1" 200 -
+2025-07-15 11:33:54,667 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-15 11:33:54,668 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 11:33:54,723 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 11:33:55,767 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 11:33:55,848 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 11:33:59,655 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:33:59] "GET /exam-add HTTP/1.1" 200 -
+2025-07-15 11:33:59,684 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:33:59] "[33mGET /static/css/style.css HTTP/1.1[0m" 404 -
+2025-07-15 11:33:59,687 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:33:59] "[33mGET /static/js/main.js HTTP/1.1[0m" 404 -
+2025-07-15 11:34:02,810 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:34:02] "GET / HTTP/1.1" 200 -
+2025-07-15 11:34:02,843 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:34:02] "[33mGET /static/css/style.css HTTP/1.1[0m" 404 -
+2025-07-15 11:34:02,847 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:34:02] "[33mGET /static/js/main.js HTTP/1.1[0m" 404 -
+2025-07-15 11:42:43,544 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\init_db.py', reloading
+2025-07-15 11:42:43,548 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\init_db.py', reloading
+2025-07-15 11:42:44,631 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 11:42:45,771 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 11:42:45,810 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 11:51:38,888 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-15 11:51:38,888 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 11:51:38,939 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 11:51:40,098 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 11:51:40,158 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 11:51:45,995 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:51:45] "GET / HTTP/1.1" 200 -
+2025-07-15 11:51:46,025 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:51:46] "[33mGET /static/css/style.css HTTP/1.1[0m" 404 -
+2025-07-15 11:51:46,036 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:51:46] "[33mGET /static/js/main.js HTTP/1.1[0m" 404 -
+2025-07-15 11:51:53,527 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:51:53] "GET /login HTTP/1.1" 200 -
+2025-07-15 11:52:00,594 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:52:00] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-07-15 11:52:00,594 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:52:00] "GET /login HTTP/1.1" 200 -
+2025-07-15 11:52:20,762 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:52:20] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-07-15 11:52:20,783 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:52:20] "GET / HTTP/1.1" 200 -
+2025-07-15 11:52:20,821 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:52:20] "[33mGET /static/css/style.css HTTP/1.1[0m" 404 -
+2025-07-15 11:52:20,824 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:52:20] "[33mGET /static/js/main.js HTTP/1.1[0m" 404 -
+2025-07-15 11:56:04,880 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 11:56:04,883 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 11:56:04,885 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 11:56:05,972 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 11:56:07,176 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 11:56:07,239 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 11:56:36,891 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-15 11:56:36,895 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 11:56:36,967 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 11:56:38,218 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 11:56:38,266 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 11:56:40,298 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:40] "GET / HTTP/1.1" 200 -
+2025-07-15 11:56:40,333 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:40] "[33mGET /static/css/style.css HTTP/1.1[0m" 404 -
+2025-07-15 11:56:40,339 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:40] "[33mGET /static/js/main.js HTTP/1.1[0m" 404 -
+2025-07-15 11:56:45,132 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:45] "[32mGET /login HTTP/1.1[0m" 302 -
+2025-07-15 11:56:45,153 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:45] "GET / HTTP/1.1" 200 -
+2025-07-15 11:56:45,188 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:45] "[33mGET /static/css/style.css HTTP/1.1[0m" 404 -
+2025-07-15 11:56:45,191 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:45] "[33mGET /static/js/main.js HTTP/1.1[0m" 404 -
+2025-07-15 11:56:52,846 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:52] "[32mGET /login HTTP/1.1[0m" 302 -
+2025-07-15 11:56:52,869 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:52] "GET / HTTP/1.1" 200 -
+2025-07-15 11:56:52,901 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:52] "[33mGET /static/css/style.css HTTP/1.1[0m" 404 -
+2025-07-15 11:56:52,906 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:52] "[33mGET /static/js/main.js HTTP/1.1[0m" 404 -
+2025-07-15 11:56:56,391 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:56] "GET / HTTP/1.1" 200 -
+2025-07-15 11:56:56,424 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:56] "[33mGET /static/css/style.css HTTP/1.1[0m" 404 -
+2025-07-15 11:56:56,426 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:56] "[33mGET /static/js/main.js HTTP/1.1[0m" 404 -
+2025-07-15 11:56:58,328 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:58] "GET / HTTP/1.1" 200 -
+2025-07-15 11:56:58,358 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:58] "[33mGET /static/css/style.css HTTP/1.1[0m" 404 -
+2025-07-15 11:56:58,358 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:56:58] "[33mGET /static/js/main.js HTTP/1.1[0m" 404 -
+2025-07-15 11:57:07,862 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:57:07] "[32mGET /login HTTP/1.1[0m" 302 -
+2025-07-15 11:57:07,892 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:57:07] "GET / HTTP/1.1" 200 -
+2025-07-15 11:57:07,920 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:57:07] "[33mGET /static/css/style.css HTTP/1.1[0m" 404 -
+2025-07-15 11:57:07,920 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 11:57:07] "[33mGET /static/js/main.js HTTP/1.1[0m" 404 -
+2025-07-15 12:03:19,133 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 12:03:19,133 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 12:03:19,138 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 12:03:20,243 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:21:13,838 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-15 13:21:13,839 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 13:21:13,883 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:21:14,791 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:21:14,823 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:21:18,339 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:21:18] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:21:18,408 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:21:18] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:21:24,022 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:21:24] "GET /exams HTTP/1.1" 200 -
+2025-07-15 13:21:32,272 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:21:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:21:32,291 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:21:32] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:21:37,991 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:21:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:21:38,023 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:21:38] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:21:41,069 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:21:41] "GET /exams HTTP/1.1" 200 -
+2025-07-15 13:21:42,541 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\anaconda3\\Lib\\site-packages\\jinja2\\loaders.py', reloading
+2025-07-15 13:21:42,569 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:21:42] "[35m[1mGET /subjects HTTP/1.1[0m" 500 -
+2025-07-15 13:21:42,770 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:21:42] "[36mGET /subjects?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-07-15 13:21:42,770 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:21:42] "[36mGET /subjects?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-07-15 13:21:42,799 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:21:42] "[36mGET /subjects?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-07-15 13:21:43,615 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:21:44,496 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:21:44,526 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:22:20,793 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:22:20,800 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:22:20,801 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:22:21,870 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:22:22,765 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:22:22,799 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:26:43,522 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:26:43] "GET /exams HTTP/1.1" 200 -
+2025-07-15 13:26:47,785 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:26:47] "GET /exams HTTP/1.1" 200 -
+2025-07-15 13:26:48,579 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:26:48] "GET /exams HTTP/1.1" 200 -
+2025-07-15 13:27:06,373 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:27:06] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-07-15 13:27:54,027 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:27:54] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:30:32,061 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:30:32,067 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:30:32,068 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:30:33,128 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:30:34,013 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:30:34,045 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:30:40,353 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:30:40] "GET /exams HTTP/1.1" 200 -
+2025-07-15 13:30:42,756 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:30:42] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:30:45,432 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:30:45] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:30:45,459 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:30:45] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:30:55,695 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:30:55,695 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:30:55,695 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:30:56,761 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:30:57,679 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:30:57,713 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:30:58,091 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:30:58,098 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:30:58,098 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:30:59,161 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:31:00,098 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:31:00,130 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:31:00,954 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:31:00,961 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:31:00,962 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:31:02,031 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:31:02,911 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:31:02,945 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:31:05,275 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:05] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:31:11,945 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\anaconda3\\Lib\\site-packages\\flask\\helpers.py', reloading
+2025-07-15 13:31:11,956 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\anaconda3\\Lib\\site-packages\\werkzeug\\routing\\map.py', reloading
+2025-07-15 13:31:11,966 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:11] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-07-15 13:31:12,184 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:12] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2025-07-15 13:31:12,184 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:12] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2025-07-15 13:31:12,205 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:12] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-07-15 13:31:12,255 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:12] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2025-07-15 13:31:13,034 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:31:13,901 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:31:13,926 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:31:24,853 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:31:24,853 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:31:25,920 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:31:27,046 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:31:27,099 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:31:27,762 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,773 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,784 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,793 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,803 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,812 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,820 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,830 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,841 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,848 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,858 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,869 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,878 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,887 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,897 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,907 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,917 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,931 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,941 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:27,952 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:27] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,029 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,029 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,050 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,051 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,066 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,078 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,088 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,097 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,107 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,116 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,125 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,134 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,143 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,154 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,163 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,173 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,181 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,190 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,202 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:29,210 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:29] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:30,979 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:30] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:30,998 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:30] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,008 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,019 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,028 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,032 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,048 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,048 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,065 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,065 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,081 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,081 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,101 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,109 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,119 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,125 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,137 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,146 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,154 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:31,164 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:31] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,429 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,446 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,446 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,465 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,477 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,479 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,496 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,496 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,512 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,512 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,529 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,529 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,547 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,556 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,564 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,564 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,584 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,592 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,595 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:32,611 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:32] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,662 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,677 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,687 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,699 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,703 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,721 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,730 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,730 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,751 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,762 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,765 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,782 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,795 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,804 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,814 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,827 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,835 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,847 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,847 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:31:37,864 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:31:37] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:32:40,149 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:32:40,149 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:32:40,149 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:32:41,256 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:33:51,947 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-15 13:33:51,948 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 13:33:51,988 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:33:52,887 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:33:52,934 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:33:55,857 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:33:55] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:33:55,915 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:33:55] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:33:59,590 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:33:59] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:33:59,616 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:33:59] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:46:47,624 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:46:47] "GET /exams HTTP/1.1" 200 -
+2025-07-15 13:46:52,930 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:46:52] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:46:52,953 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:46:52] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:48:49,562 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-15 13:48:49,562 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 13:48:49,614 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:48:50,553 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:48:50,597 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:48:51,994 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:48:51,995 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:48:51,996 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:48:52,175 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:48:52] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:48:53,065 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:48:53,943 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:48:53,976 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:49:23,809 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:49:23,809 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:49:23,809 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:49:24,897 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:49:25,759 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:49:25,796 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:49:59,785 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:49:59,786 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:49:59,787 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:50:00,845 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:50:01,696 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:50:01,735 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:50:04,886 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:50:04,892 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:50:04,893 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:50:05,958 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:50:06,830 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:50:06,863 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:50:09,885 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:50:09] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:50:13,789 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:50:13] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:50:16,523 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:50:16] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:50:16,542 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:50:16] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:50:20,384 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:50:20] "[32mGET / HTTP/1.1[0m" 302 -
+2025-07-15 13:50:20,413 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:50:20] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:50:40,293 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:50:40] "GET /exams HTTP/1.1" 200 -
+2025-07-15 13:50:56,764 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:50:56,770 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:50:56,771 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:50:57,823 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:50:58,693 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:50:58,731 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:51:05,626 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:51:05,626 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:51:05,627 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:51:06,679 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:51:07,560 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:51:07,597 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:51:11,093 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:51:11,102 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:51:12,157 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:51:13,025 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:51:13,059 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:51:21,298 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:51:21,301 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:51:22,378 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:51:23,259 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:51:23,293 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:51:30,025 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:51:30,025 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:51:30,025 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:51:31,072 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:51:31,945 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:51:31,979 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:51:49,796 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:51:49,801 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:51:49,802 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:51:50,858 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:51:51,725 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:51:51,768 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:53:12,366 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:53:12,366 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:53:12,366 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:53:13,425 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:53:14,341 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:53:14,375 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:53:18,074 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:53:18,082 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:53:18,083 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 13:53:19,139 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:53:20,115 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:53:20,174 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:55:09,978 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-15 13:55:09,978 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 13:55:10,024 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:55:10,905 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:55:10,933 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:55:13,372 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:55:13] "GET /home HTTP/1.1" 200 -
+2025-07-15 13:55:16,554 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:55:16] "GET /exams HTTP/1.1" 200 -
+2025-07-15 13:56:47,328 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-07-15 13:56:47,329 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 13:56:47,370 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 13:56:48,280 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:56:48,320 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 13:56:49,804 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:56:49] "GET /exams HTTP/1.1" 200 -
