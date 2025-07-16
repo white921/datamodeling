@@ -316,115 +316,6 @@ def exam_detail(exam_id: int) -> str:
     
     return render_template('exams/detail.html', exam=exam, questions=questions)
 
-@app.route('/exam-add')
-@login_required
-def exam_add() -> str:
-    """試験追加ページ"""
-    cur = get_db().cursor()
-    
-    # 科目一覧を取得
-    subjects = cur.execute('''
-        SELECT s.subject_id, f.faculty_name, d.department_name, s.subject_name
-        FROM Subjects s
-        JOIN Departments d ON s.department_id = d.department_id
-        JOIN Faculties f ON d.faculty_id = f.faculty_id
-        ORDER BY f.faculty_name, d.department_name, s.subject_name
-    ''').fetchall()
-    
-    # 試験種別一覧を取得
-    exam_types = cur.execute('''
-        SELECT exam_type_id, exam_type_name FROM ExamTypes ORDER BY exam_type_name
-    ''').fetchall()
-    
-    # 教員一覧を取得
-    professors = cur.execute('''
-        SELECT professor_id, professor_name FROM Professors ORDER BY professor_name
-    ''').fetchall()
-    
-    # 現在年度
-    from datetime import datetime
-    current_year = datetime.now().year
-    
-    return render_template('exams/add.html', 
-                         subjects=subjects,
-                         exam_types=exam_types, 
-                         professors=professors,
-                         current_year=current_year)
-
-@app.route('/exam-add', methods=['POST'])
-@login_required
-def exam_add_execute() -> Response:
-    """試験追加実行"""
-    con = get_db()
-    cur = con.cursor()
-    
-    # フォームデータ取得
-    subject_id = request.form.get('subject_id')
-    exam_type_id = request.form.get('exam_type_id')
-    exam_year = request.form.get('exam_year')
-    instructions = request.form.get('instructions', '').strip()
-    professor_ids = request.form.getlist('professor_ids')
-    
-    # バリデーション
-    try:
-        subject_id = int(subject_id)
-        exam_type_id = int(exam_type_id)
-        exam_year = int(exam_year)
-        professor_ids = [int(pid) for pid in professor_ids if pid]
-    except (ValueError, TypeError):
-        flash('入力値に不正な値が含まれています', 'error')
-        return redirect(url_for('exam_add'))
-    
-    if not professor_ids:
-        flash('担当教員を少なくとも1人選択してください', 'error')
-        return redirect(url_for('exam_add'))
-    
-    # 年度の妥当性チェック
-    if exam_year < 2000 or exam_year > 2025:
-        flash('年度は2000年から2025年の間で入力してください', 'error')
-        return redirect(url_for('exam_add'))
-    
-    # 制御文字チェック
-    if has_control_character(instructions):
-        flash('注意事項に制御文字が含まれています', 'error')
-        return redirect(url_for('exam_add'))
-    
-    try:
-        # 同じ科目・試験種別・年度の組み合わせが既に存在するかチェック
-        existing_exam = cur.execute('''
-            SELECT exam_id FROM Exams 
-            WHERE subject_id = ? AND exam_type_id = ? AND exam_year = ?
-        ''', (subject_id, exam_type_id, exam_year)).fetchone()
-        
-        if existing_exam:
-            flash('同じ科目・試験種別・年度の試験が既に存在します', 'error')
-            return redirect(url_for('exam_add'))
-        
-        # 試験を追加
-        cur.execute('''
-            INSERT INTO Exams (subject_id, exam_type_id, exam_year, instructions)
-            VALUES (?, ?, ?, ?)
-        ''', (subject_id, exam_type_id, exam_year, instructions))
-        
-        # 追加された試験のIDを取得
-        exam_id = cur.lastrowid
-        
-        # 担当教員を追加
-        for professor_id in professor_ids:
-            cur.execute('''
-                INSERT INTO ExamProfessors (exam_id, professor_id)
-                VALUES (?, ?)
-            ''', (exam_id, professor_id))
-        
-        con.commit()
-        flash('試験を正常に追加しました', 'success')
-        return redirect(url_for('exam_detail', exam_id=exam_id))
-        
-    except sqlite3.Error as e:
-        con.rollback()
-        flash('データベースエラーが発生しました', 'error')
-        return redirect(url_for('exam_add'))
-
 @app.route('/subjects')
 @login_required
 def subjects() -> str:
@@ -442,42 +333,18 @@ def subjects() -> str:
     
     return render_template('subjects/list.html', subject_list=subject_list)
 
-@app.route('/exam-create')
+@app.route('/exam-add')
 @login_required
-def exam_create() -> str:
-    """新しい試験作成ページ（学部・学科選択式、科目・教員自由入力）"""
-    cur = get_db().cursor()
-    
-    # 学部一覧を取得
-    faculties = cur.execute('''
-        SELECT faculty_id, faculty_name FROM Faculties ORDER BY faculty_id
-    ''').fetchall()
-    
-    # 学科一覧を取得（JavaScript用）
-    departments = cur.execute('''
-        SELECT department_id, faculty_id, department_name 
-        FROM Departments ORDER BY faculty_id, department_id
-    ''').fetchall()
-    
-    # 試験種別一覧を取得
-    exam_types = cur.execute('''
-        SELECT exam_type_id, exam_type_name FROM ExamTypes ORDER BY exam_type_name
-    ''').fetchall()
-    
-    # 現在年度
-    from datetime import datetime
-    current_year = datetime.now().year
-    
-    return render_template('exams/create.html', 
-                         faculties=faculties,
-                         departments=departments,
-                         exam_types=exam_types,
-                         current_year=current_year)
+def exam_add() -> str:
+    """試験追加ページ（新しい学部・学科選択式、科目・教員自由入力）"""
+    from flask import send_from_directory
+    return render_template('exams/add.html')
 
-@app.route('/exam-create', methods=['POST'])
+@app.route('/exam-add', methods=['POST'])
 @login_required
-def exam_create_execute() -> Response:
-    """新しい試験作成実行"""
+def exam_add_execute() -> Response:
+    """試験追加実行"""
+    from urllib.parse import quote
     con = get_db()
     cur = con.cursor()
     
@@ -497,8 +364,8 @@ def exam_create_execute() -> Response:
         # バリデーション
         if not all([faculty_id, department_id, subject_name, subject_type, 
                    semester, grade_level, professor_name, exam_type_id, exam_year]):
-            flash('すべての必須項目を入力してください', 'error')
-            return redirect(url_for('exam_create'))
+            message = quote('すべての必須項目を入力してください')
+            return redirect(f'/exam-add?message={message}&type=error')
         
         try:
             faculty_id = int(faculty_id)
@@ -507,30 +374,30 @@ def exam_create_execute() -> Response:
             exam_type_id = int(exam_type_id)
             exam_year = int(exam_year)
         except ValueError:
-            flash('入力値に不正な値が含まれています', 'error')
-            return redirect(url_for('exam_create'))
+            message = quote('入力値に不正な値が含まれています')
+            return redirect(f'/exam-add?message={message}&type=error')
         
         # 年度の妥当性チェック
         if exam_year < 2000 or exam_year > 2030:
-            flash('年度は2000年から2030年の間で入力してください', 'error')
-            return redirect(url_for('exam_create'))
+            message = quote('年度は2000年から2030年の間で入力してください')
+            return redirect(f'/exam-add?message={message}&type=error')
         
         # 制御文字チェック
         if any(has_control_character(s) for s in [subject_name, professor_name, instructions]):
-            flash('入力値に制御文字が含まれています', 'error')
-            return redirect(url_for('exam_create'))
+            message = quote('入力値に制御文字が含まれています')
+            return redirect(f'/exam-add?message={message}&type=error')
         
         # 科目種別と学期の妥当性チェック
         valid_subject_types = ['必修', '選択必修', '一般教養']
         valid_semesters = ['春学期', '春学期前半', '春学期後半', '秋学期', '秋学期前半', '秋学期後半']
         
         if subject_type not in valid_subject_types:
-            flash('不正な科目種別です', 'error')
-            return redirect(url_for('exam_create'))
+            message = quote('不正な科目種別です')
+            return redirect(f'/exam-add?message={message}&type=error')
         
         if semester not in valid_semesters:
-            flash('不正な学期です', 'error')
-            return redirect(url_for('exam_create'))
+            message = quote('不正な学期です')
+            return redirect(f'/exam-add?message={message}&type=error')
         
         # 学科の存在確認
         dept_check = cur.execute('''
@@ -539,8 +406,8 @@ def exam_create_execute() -> Response:
         ''', (department_id, faculty_id)).fetchone()
         
         if not dept_check:
-            flash('選択された学部・学科の組み合わせが正しくありません', 'error')
-            return redirect(url_for('exam_create'))
+            message = quote('選択された学部・学科の組み合わせが正しくありません')
+            return redirect(f'/exam-add?message={message}&type=error')
         
         # 科目を検索または新規作成
         existing_subject = cur.execute('''
@@ -580,8 +447,8 @@ def exam_create_execute() -> Response:
         ''', (subject_id, exam_type_id, exam_year)).fetchone()
         
         if existing_exam:
-            flash('同じ科目・試験種別・年度の試験が既に存在します', 'error')
-            return redirect(url_for('exam_create'))
+            message = quote('同じ科目・試験種別・年度の試験が既に存在します')
+            return redirect(f'/exam-add?message={message}&type=error')
         
         # 試験を作成
         cur.execute('''
@@ -609,17 +476,17 @@ def exam_create_execute() -> Response:
             ''', (subject_id, professor_id, exam_year, semester))
         
         con.commit()
-        print('試験を正常に作成しました', 'success')
+        flash('試験を正常に作成しました', 'success')
         return redirect(url_for('exams'))
         
     except sqlite3.Error as e:
         con.rollback()
-        print('データベースエラーが発生しました', 'error')
-        return redirect(url_for('exam_add'))
+        message = quote('データベースエラーが発生しました')
+        return redirect(f'/exam-add?message={message}&type=error')
     except Exception as e:
         con.rollback()
-        print('予期しないエラーが発生しました', 'error')
-        return redirect(url_for('exam_add'))
+        message = quote('予期しないエラーが発生しました')
+        return redirect(f'/exam-add?message={message}&type=error')
 
 if __name__ == '__main__':
     app.run(debug=True)
