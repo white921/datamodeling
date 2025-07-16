@@ -1,392 +1,303 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ホーム - 試験問題管理システム</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .navbar {
-            background: linear-gradient(45deg, #3b82f6, #1d4ed8) !important;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .welcome-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 3rem 0;
-            margin-bottom: 2rem;
-        }
-        .stats-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: none;
-            margin-bottom: 1.5rem;
-        }
-        .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        }
-        .stats-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-        .stats-icon.exams { background: linear-gradient(45deg, #3b82f6, #1d4ed8); }
-        .stats-icon.subjects { background: linear-gradient(45deg, #10b981, #059669); }
-        .stats-icon.professors { background: linear-gradient(45deg, #f59e0b, #d97706); }
-        .stats-icon.faculties { background: linear-gradient(45deg, #8b5cf6, #7c3aed); }
-        
-        .feature-card {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            border: none;
-            height: 100%;
-        }
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        }
-        .feature-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
-            margin: 0 auto 1rem;
-        }
-        .feature-icon.primary { background: linear-gradient(45deg, #3b82f6, #1d4ed8); }
-        .feature-icon.success { background: linear-gradient(45deg, #10b981, #059669); }
-        .feature-icon.warning { background: linear-gradient(45deg, #f59e0b, #d97706); }
-        .feature-icon.info { background: linear-gradient(45deg, #06b6d4, #0891b2); }
-        
-        .recent-exams {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-        .exam-item {
-            padding: 0.75rem;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
-        }
-        .exam-item:hover {
-            background-color: #f8f9fa;
-        }
-        .user-badge {
-            background: linear-gradient(45deg, #10b981, #059669);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-        .quick-action-btn {
-            border-radius: 10px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            margin: 0.25rem;
-        }
-        .quick-action-btn:hover {
-            transform: translateY(-2px);
-        }
-    </style>
-</head>
-<body>
-    <!-- ナビゲーションバー -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">
-                <i class="fas fa-graduation-cap me-2"></i>
-                試験問題管理システム
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{{ url_for('index') }}">
-                            <i class="fas fa-home me-1"></i>ホーム
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('exams') }}">
-                            <i class="fas fa-file-alt me-1"></i>試験一覧
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('subjects') }}">
-                            <i class="fas fa-book me-1"></i>科目一覧
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('professors') }}">
-                            <i class="fas fa-chalkboard-teacher me-1"></i>教員一覧
-                        </a>
-                    </li>
-                    {% if session.user_type in ['admin', 'staff'] %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('statistics') }}">
-                            <i class="fas fa-chart-bar me-1"></i>統計
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-                <div class="navbar-nav">
-                    <span class="navbar-text me-3">
-                        <span class="user-badge">
-                            試験問題管理システム
-                        </span>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </nav>
+{% extends "base.html" %}
 
-    <!-- ウェルカムセクション -->
-    <div class="welcome-section">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h1 class="display-5 fw-bold mb-3">
-                        試験問題管理システムへようこそ
-                    </h1>
-                    <p class="lead mb-0">
-                        <i class="fas fa-graduation-cap me-2"></i>
-                        大学の試験問題と科目情報を効率的に管理
-                    </p>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <div class="d-flex flex-wrap justify-content-md-end">
-                        <a href="{{ url_for('exams') }}" class="btn btn-light quick-action-btn">
-                            <i class="fas fa-file-alt me-2"></i>試験検索
-                        </a>
-                        <a href="{{ url_for('statistics') }}" class="btn btn-outline-light quick-action-btn">
-                            <i class="fas fa-chart-bar me-2"></i>統計情報
-                        </a>
-                    </div>
-                </div>
+{% block title %}ホーム - 試験問題管理システム{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="jumbotron bg-primary text-white p-5 rounded-3 mb-4">
+            <h1 class="display-4">試験問題管理システム</h1>
+            <p class="lead">
+                大学の試験問題と科目情報を効率的に管理するためのWebアプリケーションです。<br>
+                試験問題の検索、科目情報の管理、担当教員の確認、統計情報の閲覧が可能です。
+            </p>
+            <hr class="my-4 border-light">
+            <p>ようこそ、{{ session.full_name }}さん。下記の機能をご利用いただけます。</p>
+        </div>
+    </div>
+</div>
+
+<!-- 機能紹介カード -->
+<div class="row">
+    <!-- 試験一覧 -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-file-alt fa-3x text-primary mb-3 feature-icon"></i>
+                <h5 class="card-title">試験一覧</h5>
+                <p class="card-text">
+                    学部・学科・年度別に試験問題を検索・閲覧できます。<br>
+                    過去問を効率的に探して学習に活用しましょう。
+                </p>
+                <a href="{{ url_for('exams') }}" class="btn btn-primary">
+                    <i class="fas fa-search"></i> 試験を探す
+                </a>
             </div>
         </div>
     </div>
 
-    <div class="container">
-        <!-- フラッシュメッセージ -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ 'danger' if category == 'error' else 'warning' if category == 'warning' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show" role="alert">
-                        <i class="fas fa-{{ 'exclamation-triangle' if category == 'error' else 'exclamation-circle' if category == 'warning' else 'check-circle' if category == 'success' else 'info-circle' }} me-2"></i>
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <!-- 統計カード -->
-        {% if stats %}
-        <div class="row mb-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-card text-center">
-                    <div class="stats-icon exams mx-auto">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <h3 class="mb-1">{{ stats.exams }}</h3>
-                    <p class="text-muted mb-0">試験問題</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-card text-center">
-                    <div class="stats-icon subjects mx-auto">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <h3 class="mb-1">{{ stats.subjects }}</h3>
-                    <p class="text-muted mb-0">科目</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-card text-center">
-                    <div class="stats-icon professors mx-auto">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                    </div>
-                    <h3 class="mb-1">{{ stats.professors }}</h3>
-                    <p class="text-muted mb-0">教員</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stats-card text-center">
-                    <div class="stats-icon faculties mx-auto">
-                        <i class="fas fa-university"></i>
-                    </div>
-                    <h3 class="mb-1">{{ stats.faculties }}</h3>
-                    <p class="text-muted mb-0">学部</p>
-                </div>
+    <!-- 科目一覧 -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-book fa-3x text-success mb-3 feature-icon"></i>
+                <h5 class="card-title">科目一覧</h5>
+                <p class="card-text">
+                    全学部の科目情報と関連する試験問題を確認できます。<br>
+                    科目の詳細情報や担当教員を調べることができます。
+                </p>
+                <a href="{{ url_for('subjects') }}" class="btn btn-success">
+                    <i class="fas fa-list"></i> 科目を見る
+                </a>
             </div>
         </div>
-        {% endif %}
+    </div>
 
-        <div class="row">
-            <!-- 機能カード -->
-            <div class="col-lg-8">
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <div class="feature-card text-center">
-                            <div class="feature-icon primary">
-                                <i class="fas fa-search"></i>
-                            </div>
-                            <h4 class="mb-3">試験問題検索</h4>
-                            <p class="text-muted mb-3">
-                                学部・学科・年度別に試験問題を検索できます
-                            </p>
-                            <a href="{{ url_for('exams') }}" class="btn btn-primary">
-                                <i class="fas fa-arrow-right me-1"></i>検索開始
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6 mb-4">
-                        <div class="feature-card text-center">
-                            <div class="feature-icon success">
-                                <i class="fas fa-book-open"></i>
-                            </div>
-                            <h4 class="mb-3">科目情報</h4>
-                            <p class="text-muted mb-3">
-                                科目の詳細情報と担当教員を確認できます
-                            </p>
-                            <a href="{{ url_for('subjects') }}" class="btn btn-success">
-                                <i class="fas fa-arrow-right me-1"></i>科目一覧
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6 mb-4">
-                        <div class="feature-card text-center">
-                            <div class="feature-icon warning">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <h4 class="mb-3">教員情報</h4>
-                            <p class="text-muted mb-3">
-                                教員の担当科目と試験情報を確認できます
-                            </p>
-                            <a href="{{ url_for('professors') }}" class="btn btn-warning">
-                                <i class="fas fa-arrow-right me-1"></i>教員一覧
-                            </a>
-                        </div>
-                    </div>
-                    
-                    {% if session.user_type in ['admin', 'staff'] %}
-                    <div class="col-md-6 mb-4">
-                        <div class="feature-card text-center">
-                            <div class="feature-icon info">
-                                <i class="fas fa-chart-pie"></i>
-                            </div>
-                            <h4 class="mb-3">統計・分析</h4>
-                            <p class="text-muted mb-3">
-                                試験データの統計分析と傾向把握
-                            </p>
-                            <a href="{{ url_for('statistics') }}" class="btn btn-info">
-                                <i class="fas fa-arrow-right me-1"></i>統計表示
-                            </a>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
+    <!-- 試験追加 -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-plus-circle fa-3x text-warning mb-3 feature-icon"></i>
+                <h5 class="card-title">試験追加</h5>
+                <p class="card-text">
+                    新しい試験情報をシステムに登録できます。<br>
+                    科目、年度、担当教員を指定して試験を追加しましょう。
+                </p>
+                <a href="{{ url_for('exam_add') }}" class="btn btn-warning">
+                    <i class="fas fa-plus"></i> 試験を追加
+                </a>
             </div>
+        </div>
+    </div>
+</div>
 
-            <!-- 最近の試験・サイドバー -->
-            <div class="col-lg-4">
-                {% if stats and stats.recent_exams %}
-                <div class="recent-exams mb-4">
-                    <h5 class="mb-3">
-                        <i class="fas fa-clock text-primary me-2"></i>
-                        最近追加された試験
-                    </h5>
-                    {% for exam in stats.recent_exams %}
-                    <div class="exam-item border-bottom">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">{{ exam.科目名 }}</h6>
-                                <small class="text-muted">
-                                    {{ exam.学部名 }} {{ exam.学科名 }}<br>
-                                    {{ exam.試験種別 }} ({{ exam.年度 }}年度)
-                                </small>
-                            </div>
-                            <a href="{{ url_for('exam_detail', exam_id=exam.exam_id) }}" 
-                               class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    <div class="text-center mt-3">
-                        <a href="{{ url_for('exams') }}" class="btn btn-sm btn-primary">
-                            すべて見る
-                        </a>
-                    </div>
-                </div>
+<!-- システム概要と統計情報 -->
+<div class="row mt-5">
+    <div class="col-md-8">
+        <h3><i class="fas fa-info-circle text-primary"></i> システムの特徴</h3>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <i class="fas fa-search text-primary"></i>
+                <strong>高度な検索機能</strong> - 学部、学科、年度、科目名による柔軟な検索
+            </li>
+            <li class="list-group-item">
+                <i class="fas fa-database text-success"></i>
+                <strong>統合データ管理</strong> - 試験、科目、教員情報の一元管理
+            </li>
+            <li class="list-group-item">
+                <i class="fas fa-chart-line text-warning"></i>
+                <strong>統計分析</strong> - 年度別、学部別などの多角的な統計情報
+            </li>
+            <li class="list-group-item">
+                <i class="fas fa-mobile-alt text-info"></i>
+                <strong>レスポンシブ対応</strong> - スマートフォンやタブレットからも利用可能
+            </li>
+            <li class="list-group-item">
+                <i class="fas fa-shield-alt text-danger"></i>
+                <strong>セキュアアクセス</strong> - keio.jpドメイン限定のセキュアなアクセス
+            </li>
+        </ul>
+    </div>
+    
+    <div class="col-md-4">
+        <h3><i class="fas fa-chart-bar text-info"></i> クイック統計</h3>
+        <div class="card stats-card">
+            <div class="card-body">
+                {% if stats %}
+                <p class="card-text">
+                    <i class="fas fa-graduation-cap text-primary"></i>
+                    登録学部数: <span class="badge bg-primary">{{ stats.faculties }}</span>
+                </p>
+                <p class="card-text">
+                    <i class="fas fa-book text-success"></i>
+                    登録科目数: <span class="badge bg-success">{{ stats.subjects }}</span>
+                </p>
+                <p class="card-text">
+                    <i class="fas fa-file-alt text-warning"></i>
+                    試験問題数: <span class="badge bg-warning text-dark">{{ stats.exams }}</span>
+                </p>
+                <p class="card-text">
+                    <i class="fas fa-users text-info"></i>
+                    登録教員数: <span class="badge bg-info">{{ stats.professors }}</span>
+                </p>
+                {% else %}
+                <p class="card-text">
+                    <i class="fas fa-graduation-cap text-primary"></i>
+                    登録学部数: <span class="badge bg-primary">5</span>
+                </p>
+                <p class="card-text">
+                    <i class="fas fa-book text-success"></i>
+                    登録科目数: <span class="badge bg-success">4</span>
+                </p>
+                <p class="card-text">
+                    <i class="fas fa-file-alt text-warning"></i>
+                    試験問題数: <span class="badge bg-warning text-dark">4</span>
+                </p>
+                <p class="card-text">
+                    <i class="fas fa-users text-info"></i>
+                    登録教員数: <span class="badge bg-info">3</span>
+                </p>
                 {% endif %}
+                <div class="d-grid">
+                    <a href="{{ url_for('exams') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-chart-line"></i> 詳細を見る
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ユーザー情報カード -->
+        <div class="card mt-3">
+            <div class="card-header bg-light">
+                <h6 class="mb-0"><i class="fas fa-user text-primary"></i> ログイン情報</h6>
+            </div>
+            <div class="card-body">
+                <p class="card-text mb-0">
+                    <strong>ユーザー:</strong> {{ session.full_name }}<br>
+                    <strong>メール:</strong> {{ session.email }}<br>
+                    <strong>ログイン時刻:</strong><br>
+                    <small class="text-muted">{{ session.login_time[:19] if session.login_time else '不明' }}</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 
-                <!-- ユーザー情報カード -->
-                <div class="recent-exams">
-                    <h5 class="mb-3">
-                        <i class="fas fa-info-circle text-success me-2"></i>
-                        システム情報
-                    </h5>
-                    <div class="small text-muted">
-                        <p class="mb-2">
-                            <i class="fas fa-user me-2"></i>
-                            ユーザー種別: 
-                            {% if session.user_type == 'admin' %}管理者
-                            {% elif session.user_type == 'staff' %}事務員
-                            {% elif session.user_type == 'faculty' %}教員
-                            {% elif session.user_type == 'student' %}学生
-                            {% endif %}
-                        </p>
-                        <p class="mb-2">
-                            <i class="fas fa-envelope me-2"></i>
-                            {{ session.email }}
-                        </p>
-                        {% if session.user_type == 'faculty' and stats and stats.user_info %}
-                        <p class="mb-2">
-                            <i class="fas fa-chalkboard-teacher me-2"></i>
-                            担当試験: {{ stats.user_info.exam_count }}件
-                        </p>
-                        {% endif %}
-                        <p class="mb-0">
-                            <i class="fas fa-shield-alt me-2"></i>
-                            セッション: 
-                            {% if session.remember_me %}30日間{% else %}24時間{% endif %}
-                        </p>
+<!-- 使い方ガイド -->
+<div class="row mt-5">
+    <div class="col-12">
+        <h3><i class="fas fa-question-circle text-success"></i> 使い方ガイド</h3>
+        <div class="accordion" id="usageAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                        <i class="fas fa-search me-2"></i> 試験問題を探す
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#usageAccordion">
+                    <div class="accordion-body">
+                        <ol>
+                            <li><strong>「試験一覧」をクリック</strong> - ナビゲーションバーまたはカードから選択</li>
+                            <li><strong>条件で絞り込み</strong> - 学部・学科・年度・科目名で検索</li>
+                            <li><strong>試験を選択</strong> - 該当する試験をクリックして詳細表示</li>
+                            <li><strong>詳細確認</strong> - 試験問題画像や担当教員情報を確認</li>
+                        </ol>
+                        <div class="alert alert-info">
+                            <i class="fas fa-lightbulb"></i> 
+                            <strong>検索のコツ:</strong> 科目名では部分一致検索が可能です。「%」をワイルドカードとして使用できます。
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                        <i class="fas fa-book me-2"></i> 科目情報を確認する
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#usageAccordion">
+                    <div class="accordion-body">
+                        <ol>
+                            <li><strong>「科目一覧」をクリック</strong> - ナビゲーションバーまたはカードから選択</li>
+                            <li><strong>科目を探す</strong> - 学部・学科別に科目を確認</li>
+                            <li><strong>詳細表示</strong> - 科目名をクリックして詳細表示</li>
+                            <li><strong>関連情報</strong> - 関連する試験問題や担当教員を確認</li>
+                        </ol>
+                        <div class="alert alert-success">
+                            <i class="fas fa-info-circle"></i> 
+                            <strong>便利機能:</strong> 科目詳細ページから関連する試験問題を直接検索できます。
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                        <i class="fas fa-mobile-alt me-2"></i> モバイル利用について
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#usageAccordion">
+                    <div class="accordion-body">
+                        <p>このシステムはスマートフォンやタブレットからでも快適にご利用いただけます。</p>
+                        <ul>
+                            <li><strong>レスポンシブデザイン</strong> - 画面サイズに応じて最適化</li>
+                            <li><strong>タッチ操作対応</strong> - スマートフォンでの操作を考慮</li>
+                            <li><strong>高速表示</strong> - モバイル回線でも快適に動作</li>
+                        </ul>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            <strong>注意:</strong> 大きな画像ファイルの表示には通信環境によって時間がかかる場合があります。
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<!-- クイックアクションボタン -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h5><i class="fas fa-rocket text-primary"></i> クイックアクション</h5>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <a href="{{ url_for('exams') }}" class="btn btn-primary">
+                        <i class="fas fa-list"></i> すべての試験
+                    </a>
+                    <a href="{{ url_for('subjects') }}" class="btn btn-success">
+                        <i class="fas fa-book"></i> すべての科目
+                    </a>
+                    <a href="{{ url_for('exam_add') }}" class="btn btn-warning">
+                        <i class="fas fa-plus-circle"></i> 試験追加
+                    </a>
+                    <a href="{{ url_for('exams') }}?year_filter=2024" class="btn btn-info">
+                        <i class="fas fa-calendar"></i> 2024年度試験
+                    </a>
+                    <a href="{{ url_for('exams') }}?faculty_filter=理工学部" class="btn btn-outline-primary">
+                        <i class="fas fa-cog"></i> 理工学部試験
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// 統計数字のカウントアップアニメーション
+document.addEventListener('DOMContentLoaded', function() {
+    const badges = document.querySelectorAll('.badge');
+    badges.forEach(badge => {
+        const finalValue = parseInt(badge.textContent);
+        if (finalValue > 0 && finalValue < 100) {
+            badge.textContent = '0';
+            let current = 0;
+            const increment = 1;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= finalValue) {
+                    current = finalValue;
+                    clearInterval(timer);
+                }
+                badge.textContent = current;
+            }, 100);
+        }
+    });
+    
+    // カードのホバー効果を強化
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

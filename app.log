@@ -414,3 +414,21 @@
 2025-07-15 13:56:48,280 - werkzeug - WARNING -  * Debugger is active!
 2025-07-15 13:56:48,320 - werkzeug - INFO -  * Debugger PIN: 283-062-945
 2025-07-15 13:56:49,804 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:56:49] "GET /exams HTTP/1.1" 200 -
+2025-07-15 17:18:04,078 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\anaconda3\\cwp.py', reloading
+2025-07-15 17:18:05,352 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 17:18:06,584 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 17:18:06,637 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-15 23:41:30,875 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\init_db.py', reloading
+2025-07-15 23:41:30,877 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-15 23:41:32,096 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-15 23:41:33,431 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 23:41:33,477 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-16 07:35:37,439 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\anaconda3\\Scripts\\conda-script.py', reloading
+2025-07-16 07:35:39,243 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-07-16 07:35:41,442 - werkzeug - WARNING -  * Debugger is active!
+2025-07-16 07:35:41,522 - werkzeug - INFO -  * Debugger PIN: 283-062-945
+2025-07-16 07:53:22,771 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-16 07:53:22,772 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-16 07:53:22,773 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-16 07:53:22,774 - werkzeug - INFO -  * Detected change in 'C:\\Users\\shige\\workspace\\dm_app\\app.py', reloading
+2025-07-16 07:53:23,850 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
