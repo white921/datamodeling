@@ -20,7 +20,7 @@
 <!-- 機能紹介カード -->
 <div class="row">
     <!-- 試験一覧 -->
-    <div class="col-md-4 mb-4">
+    <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-body text-center">
                 <i class="fas fa-file-alt fa-3x text-primary mb-3 feature-icon"></i>
@@ -36,25 +36,8 @@
         </div>
     </div>
 
-    <!-- 科目一覧 -->
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="fas fa-book fa-3x text-success mb-3 feature-icon"></i>
-                <h5 class="card-title">科目一覧</h5>
-                <p class="card-text">
-                    全学部の科目情報と関連する試験問題を確認できます。<br>
-                    科目の詳細情報や担当教員を調べることができます。
-                </p>
-                <a href="{{ url_for('subjects') }}" class="btn btn-success">
-                    <i class="fas fa-list"></i> 科目を見る
-                </a>
-            </div>
-        </div>
-    </div>
-
     <!-- 試験追加 -->
-    <div class="col-md-4 mb-4">
+    <div class="col-md-6 mb-4">
         <div class="card h-100">
             <div class="card-body text-center">
                 <i class="fas fa-plus-circle fa-3x text-warning mb-3 feature-icon"></i>
@@ -191,28 +174,6 @@
             </div>
             
             <div class="accordion-item">
-                <h2 class="accordion-header" id="headingTwo">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
-                        <i class="fas fa-book me-2"></i> 科目情報を確認する
-                    </button>
-                </h2>
-                <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#usageAccordion">
-                    <div class="accordion-body">
-                        <ol>
-                            <li><strong>「科目一覧」をクリック</strong> - ナビゲーションバーまたはカードから選択</li>
-                            <li><strong>科目を探す</strong> - 学部・学科別に科目を確認</li>
-                            <li><strong>詳細表示</strong> - 科目名をクリックして詳細表示</li>
-                            <li><strong>関連情報</strong> - 関連する試験問題や担当教員を確認</li>
-                        </ol>
-                        <div class="alert alert-success">
-                            <i class="fas fa-info-circle"></i> 
-                            <strong>便利機能:</strong> 科目詳細ページから関連する試験問題を直接検索できます。
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="accordion-item">
                 <h2 class="accordion-header" id="headingThree">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
                         <i class="fas fa-mobile-alt me-2"></i> モバイル利用について
@@ -246,9 +207,6 @@
                 <div class="d-flex flex-wrap justify-content-center gap-2">
                     <a href="{{ url_for('exams') }}" class="btn btn-primary">
                         <i class="fas fa-list"></i> すべての試験
-                    </a>
-                    <a href="{{ url_for('subjects') }}" class="btn btn-success">
-                        <i class="fas fa-book"></i> すべての科目
                     </a>
                     <a href="{{ url_for('exam_add') }}" class="btn btn-warning">
                         <i class="fas fa-plus-circle"></i> 試験追加

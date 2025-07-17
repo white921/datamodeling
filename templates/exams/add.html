@@ -204,6 +204,93 @@
             opacity: 1;
         }
 
+        /* ファイルアップロード関連のスタイル */
+        .file-upload-area {
+            border: 2px dashed #ced4da;
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            background-color: #f8f9fa;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-area:hover {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+
+        .file-upload-area.drag-over {
+            border-color: #007bff;
+            background-color: #e3f2fd;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.2s;
+        }
+
+        .file-input-button:hover {
+            background-color: #0056b3;
+        }
+
+        #file-preview {
+            margin-top: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .file-icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .file-info {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .file-size {
+            color: #6c757d;
+            font-size: 0.8em;
+        }
+
+        .file-size.error {
+            color: #dc3545;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -237,7 +324,7 @@
             <p>学部・学科は選択式です。科目名・教員名は自由入力で、新規科目・教員の登録も可能です。</p>
         </div>
 
-        <form id="examForm" action="/exam-add" method="POST">
+        <form id="examForm" action="/exam-add" method="POST" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="form-group">
                     <label for="faculty">学部 <span class="required">*</span></label>
@@ -341,6 +428,27 @@
                 <textarea id="instructions" name="instructions" placeholder="試験に関する注意事項や備考を入力してください"></textarea>
             </div>
 
+            <div class="form-group">
+                <label for="exam_files">試験問題ファイル</label>
+                <div class="file-upload-area" id="file-upload-area">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="exam_files" name="exam_files" multiple accept=".pdf,.png,.jpg,.jpeg,.gif,.bmp,.tiff">
+                        <button type="button" class="file-input-button" onclick="document.getElementById('exam_files').click()">
+                            📁 ファイルを選択
+                        </button>
+                    </div>
+                    <p style="margin: 10px 0 0 0; color: #6c757d; font-size: 0.8em;">
+                        または、ファイルをここにドラッグ&ドロップ
+                    </p>
+                </div>
+                <div style="font-size: 0.8em; color: #6c757d; margin-top: 5px;">
+                    <strong>対応ファイル形式:</strong> PDF, PNG, JPG, JPEG, GIF, BMP, TIFF<br>
+                    <strong>最大ファイルサイズ:</strong> 16MB<br>
+                    <strong>複数ファイル選択可能:</strong> Ctrl+クリック または Shift+クリック
+                </div>
+                <div id="file-preview"></div>
+            </div>
+
             <div class="button-group">
                 <button type="submit" class="btn btn-primary">📝 試験を作成</button>
                 <a href="/exams" class="btn btn-secondary">キャンセル</a>
@@ -400,15 +508,6 @@
         
         // サンプル教員データ（既存データベースから取得する想定）
         let professorSuggestions = [];
-
-        // 実際の運用では、これらのデータはAPIから取得
-        // fetch('/api/subjects').then(response => response.json()).then(data => {
-        //     subjectSuggestions = data.map(item => item.subject_name);
-        // });
-        
-        // fetch('/api/professors').then(response => response.json()).then(data => {
-        //     professorSuggestions = data.map(item => item.professor_name);
-        // });
 
         // 学部選択時の処理
         document.getElementById('faculty').addEventListener('change', function() {
@@ -485,9 +584,123 @@
         setupAutocomplete('subject_name', 'subject-suggestions', subjectSuggestions);
         setupAutocomplete('professor_name', 'professor-suggestions', professorSuggestions);
 
+        // ファイルアップロード関連の処理
+        const fileUploadArea = document.getElementById('file-upload-area');
+        const fileInput = document.getElementById('exam_files');
+        const filePreview = document.getElementById('file-preview');
+
+        // ドラッグ&ドロップ機能
+        fileUploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            fileUploadArea.classList.add('drag-over');
+        });
+
+        fileUploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            fileUploadArea.classList.remove('drag-over');
+        });
+
+        fileUploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            fileUploadArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            fileInput.files = files;
+            displayFilePreview(files);
+        });
+
+        // ファイル選択時の処理
+        fileInput.addEventListener('change', function(e) {
+            displayFilePreview(e.target.files);
+        });
+
+        // ファイルプレビュー表示
+        function displayFilePreview(files) {
+            filePreview.innerHTML = '';
+            
+            if (files.length === 0) return;
+
+            const fileList = document.createElement('div');
+            fileList.style.border = '1px solid #ddd';
+            fileList.style.borderRadius = '4px';
+            fileList.style.padding = '10px';
+            fileList.style.backgroundColor = '#f9f9f9';
+            fileList.style.marginTop = '10px';
+            
+            const title = document.createElement('h4');
+            title.textContent = `選択されたファイル (${files.length}件)`;
+            title.style.margin = '0 0 10px 0';
+            title.style.fontSize = '0.9em';
+            title.style.color = '#495057';
+            fileList.appendChild(title);
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                
+                // ファイルアイコン
+                const icon = document.createElement('i');
+                icon.className = 'file-icon';
+                if (file.type.startsWith('image/')) {
+                    icon.classList.add('fas', 'fa-image');
+                    icon.style.color = '#28a745';
+                } else if (file.type === 'application/pdf') {
+                    icon.classList.add('fas', 'fa-file-pdf');
+                    icon.style.color = '#dc3545';
+                } else {
+                    icon.classList.add('fas', 'fa-file');
+                    icon.style.color = '#6c757d';
+                }
+                
+                // ファイル情報
+                const fileInfo = document.createElement('div');
+                fileInfo.className = 'file-info';
+                
+                const fileName = document.createElement('span');
+                fileName.className = 'file-name';
+                fileName.textContent = file.name;
+                
+                const fileSize = document.createElement('span');
+                fileSize.className = 'file-size';
+                const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+                fileSize.textContent = `${sizeInMB} MB`;
+                
+                // サイズ警告
+                if (file.size > 16 * 1024 * 1024) {
+                    fileSize.classList.add('error');
+                    fileSize.textContent += ' ⚠️ サイズオーバー';
+                }
+                
+                fileInfo.appendChild(fileName);
+                fileInfo.appendChild(fileSize);
+                
+                fileItem.appendChild(icon);
+                fileItem.appendChild(fileInfo);
+                
+                fileList.appendChild(fileItem);
+            }
+            
+            filePreview.appendChild(fileList);
+        }
+
         // フォーム送信時の処理
         document.getElementById('examForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+            const files = fileInput.files;
+            let hasLargeFile = false;
+            
+            // ファイルサイズチェック
+            for (let i = 0; i < files.length; i++) {
+                if (files[i].size > 16 * 1024 * 1024) {
+                    hasLargeFile = true;
+                    break;
+                }
+            }
+            
+            if (hasLargeFile) {
+                e.preventDefault();
+                alert('16MBを超えるファイルが含まれています。ファイルサイズを確認してください。');
+                return;
+            }
             
             // 基本的なバリデーション
             const requiredFields = ['faculty', 'department', 'subject_name', 'subject_type', 
@@ -505,12 +718,15 @@
             });
             
             if (!isValid) {
+                e.preventDefault();
                 alert('必須項目をすべて入力してください。');
                 return;
             }
             
-            // 実際のフォーム送信（/exam-add に送信され、成功後 /exams にリダイレクト）
-            this.submit();
+            // 送信中の表示
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '📤 送信中...';
+            submitBtn.disabled = true;
         });
     </script>
 </body>

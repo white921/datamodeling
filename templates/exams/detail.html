@@ -101,25 +101,57 @@
                                 </div>
                                 <div class="card-body text-center">
                                     {% if question.picture %}
-                                        <!-- 画像ファイルが存在する場合 -->
-                                        {% set image_path = url_for('static', filename='uploads/' + question.picture) %}
-                                        <div class="mb-3">
-                                            <img src="{{ image_path }}" 
-                                                 class="img-fluid rounded shadow-sm" 
-                                                 alt="試験問題画像"
-                                                 style="max-height: 300px; cursor: pointer;"
-                                                 onclick="openImageModal('{{ image_path }}', '{{ exam[3] }} - 問題{{ loop.index }}')">
-                                        </div>
-                                        <p class="small text-muted mb-2">{{ question.picture }}</p>
-                                        <button class="btn btn-outline-primary btn-sm" 
-                                                onclick="openImageModal('{{ image_path }}', '{{ exam[3] }} - 問題{{ loop.index }}')">
-                                            <i class="fas fa-expand"></i> 拡大表示
-                                        </button>
+                                        {% set file_path = url_for('uploaded_file', filename=question.picture) %}
+                                        {% set file_extension = question.picture.split('.')[-1].lower() %}
+                                        
+                                        {% if file_extension == 'pdf' %}
+                                            <!-- PDF ファイルの場合 -->
+                                            <div class="mb-3">
+                                                <i class="fas fa-file-pdf fa-4x text-danger mb-2"></i>
+                                                <p class="small text-muted mb-2">{{ question.picture }}</p>
+                                            </div>
+                                            <div class="d-grid gap-2">
+                                                <a href="{{ file_path }}" target="_blank" class="btn btn-outline-danger btn-sm">
+                                                    <i class="fas fa-eye"></i> PDFを開く
+                                                </a>
+                                                <a href="{{ file_path }}" download class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-download"></i> ダウンロード
+                                                </a>
+                                            </div>
+                                        {% elif file_extension in ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff'] %}
+                                            <!-- 画像ファイルの場合 -->
+                                            <div class="mb-3">
+                                                <img src="{{ file_path }}" 
+                                                     class="img-fluid rounded shadow-sm" 
+                                                     alt="試験問題画像"
+                                                     style="max-height: 300px; cursor: pointer;"
+                                                     onclick="openImageModal('{{ file_path }}', '{{ exam[3] }} - 問題{{ loop.index }}')">
+                                            </div>
+                                            <p class="small text-muted mb-2">{{ question.picture }}</p>
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-outline-primary btn-sm" 
+                                                        onclick="openImageModal('{{ file_path }}', '{{ exam[3] }} - 問題{{ loop.index }}')">
+                                                    <i class="fas fa-expand"></i> 拡大表示
+                                                </button>
+                                                <a href="{{ file_path }}" download class="btn btn-outline-secondary btn-sm">
+                                                    <i class="fas fa-download"></i> ダウンロード
+                                                </a>
+                                            </div>
+                                        {% else %}
+                                            <!-- その他のファイル形式 -->
+                                            <div class="mb-3">
+                                                <i class="fas fa-file fa-4x text-muted mb-2"></i>
+                                                <p class="small text-muted mb-2">{{ question.picture }}</p>
+                                            </div>
+                                            <a href="{{ file_path }}" download class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-download"></i> ダウンロード
+                                            </a>
+                                        {% endif %}
                                     {% else %}
-                                        <!-- 画像ファイルが存在しない場合 -->
+                                        <!-- ファイルが存在しない場合 -->
                                         <div class="text-center p-4">
                                             <i class="fas fa-file-image fa-3x text-muted mb-3"></i>
-                                            <p class="text-muted">画像ファイルが設定されていません</p>
+                                            <p class="text-muted">ファイルが設定されていません</p>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -153,8 +185,8 @@
                     <a href="{{ url_for('exams') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> 試験一覧に戻る
                     </a>
-                    <button class="btn btn-outline-primary" onclick="printPage()">
-                        <i class="fas fa-print"></i> 印刷
+                    <button class="btn btn-outline-primary" onclick="printExamQuestions()">
+                        <i class="fas fa-print"></i> 試験問題を印刷
                     </button>
                     <button class="btn btn-outline-success" onclick="shareExam()">
                         <i class="fas fa-share"></i> 共有
@@ -188,10 +220,36 @@
         </div>
     </div>
 </div>
+
+<!-- 印刷用の隠しデータ -->
+<script type="application/json" id="exam-data">
+{
+    "title": "{{ exam[3] }}",
+    "faculty": "{{ exam[1] }}",
+    "department": "{{ exam[2] }}",
+    "examType": "{{ exam[4] }}",
+    "year": "{{ exam[5] }}",
+    "professor": "{{ exam[7] or '' }}",
+    "instructions": "{{ exam[6] or '' }}",
+    "questions": [
+        {% for question in questions %}
+        {
+            "id": {{ loop.index }},
+            "filename": "{{ question.picture }}",
+            "path": "{{ url_for('uploaded_file', filename=question.picture) }}",
+            "extension": "{{ question.picture.split('.')[-1].lower() }}"
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]
+}
+</script>
 {% endblock %}
 
 {% block scripts %}
 <script>
+// 試験データを取得
+const examData = JSON.parse(document.getElementById('exam-data').textContent);
+
 // 画像拡大モーダル
 function openImageModal(imageSrc, title) {
     document.getElementById('modalImage').src = imageSrc;
@@ -209,16 +267,168 @@ function downloadImage() {
     link.click();
 }
 
-// ページ印刷
-function printPage() {
-    // 印刷用CSSを適用してから印刷
-    window.print();
+// 試験問題画像のみを印刷
+function printExamQuestions() {
+    if (examData.questions.length === 0) {
+        alert('印刷可能な試験問題が見つかりません。');
+        return;
+    }
+    
+    // 印刷用のウィンドウを作成
+    const printWindow = window.open('', '_blank');
+    
+    // 印刷用HTMLを構築
+    let printContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>${examData.title} - ${examData.examType} (${examData.year}年度)</title>
+            <style>
+                @page {
+                    margin: 20mm;
+                    size: A4;
+                }
+                
+                body {
+                    font-family: 'MS Gothic', monospace;
+                    margin: 0;
+                    padding: 0;
+                    background: white;
+                }
+                
+                .print-header {
+                    text-align: center;
+                    margin-bottom: 20px;
+                    padding-bottom: 10px;
+                    border-bottom: 2px solid #000;
+                }
+                
+                .print-header h1 {
+                    font-size: 18px;
+                    margin: 0;
+                    font-weight: bold;
+                }
+                
+                .print-header p {
+                    font-size: 12px;
+                    margin: 5px 0 0 0;
+                    color: #333;
+                }
+                
+                .question-container {
+                    page-break-inside: avoid;
+                    margin-bottom: 30px;
+                }
+                
+                .question-title {
+                    font-size: 14px;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    padding: 5px 10px;
+                    background-color: #f0f0f0;
+                    border-left: 4px solid #333;
+                }
+                
+                .question-image {
+                    max-width: 100%;
+                    height: auto;
+                    border: 1px solid #ddd;
+                    margin-bottom: 10px;
+                }
+                
+                .pdf-placeholder {
+                    border: 2px dashed #ccc;
+                    padding: 40px;
+                    text-align: center;
+                    font-size: 14px;
+                    color: #666;
+                    margin-bottom: 10px;
+                }
+                
+                .file-info {
+                    font-size: 10px;
+                    color: #666;
+                    margin-bottom: 15px;
+                }
+                
+                @media print {
+                    .question-container {
+                        page-break-after: auto;
+                        page-break-inside: avoid;
+                    }
+                    
+                    .pdf-placeholder {
+                        border: 2px solid #000;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="print-header">
+                <h1>${examData.title}</h1>
+                <p>${examData.faculty} ${examData.department} - ${examData.examType} (${examData.year}年度)</p>`;
+                
+    if (examData.professor) {
+        printContent += `<p>担当: ${examData.professor}</p>`;
+    }
+    
+    if (examData.instructions) {
+        printContent += `<p style="font-size: 11px; margin-top: 10px;">${examData.instructions}</p>`;
+    }
+    
+    printContent += `</div>`;
+    
+    // 各問題を印刷用に追加
+    examData.questions.forEach((question, index) => {
+        printContent += `<div class="question-container">`;
+        printContent += `<div class="question-title">問題 ${question.id}</div>`;
+        
+        if (['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff'].includes(question.extension)) {
+            // 画像ファイルの場合
+            printContent += `<img src="${question.path}" class="question-image" alt="問題${question.id}">`;
+        } else if (question.extension === 'pdf') {
+            // PDFファイルの場合
+            printContent += `
+                <div class="pdf-placeholder">
+                    <strong>📄 PDFファイル</strong><br>
+                    ファイル名: ${question.filename}<br>
+                    <small>※ PDFファイルは別途開いて印刷してください</small>
+                </div>
+            `;
+        }
+        
+        printContent += `<div class="file-info">ファイル名: ${question.filename}</div>`;
+        printContent += `</div>`;
+    });
+    
+    printContent += `
+            <div style="margin-top: 40px; text-align: center; font-size: 10px; color: #666;">
+                印刷日時: ${new Date().toLocaleString('ja-JP')}
+            </div>
+        </body>
+        </html>
+    `;
+    
+    // 印刷ウィンドウにコンテンツを書き込み
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    
+    // 画像の読み込みを待ってから印刷
+    printWindow.onload = function() {
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.onafterprint = function() {
+                printWindow.close();
+            };
+        }, 500);
+    };
 }
 
 // 試験情報共有
 function shareExam() {
     const url = window.location.href;
-    const title = '{{ exam[3] }}({{ exam[4] }}, {{ exam[5] }}年度)';
+    const title = `${examData.title}(${examData.examType}, ${examData.year}年度)`;
     
     if (navigator.share) {
         navigator.share({
@@ -226,7 +436,6 @@ function shareExam() {
             url: url
         });
     } else {
-        // フォールバック: URLをクリップボードにコピー
         navigator.clipboard.writeText(url).then(() => {
             alert('URLがクリップボードにコピーされました');
         });
@@ -235,26 +444,23 @@ function shareExam() {
 
 // 問題報告
 function reportIssue() {
-    const examInfo = '{{ exam[3] }}({{ exam[4] }}, {{ exam[5] }}年度)';
+    const examInfo = `${examData.title}(${examData.examType}, ${examData.year}年度)`;
     const message = `以下の試験について問題を報告します:\n\n試験: ${examInfo}\nURL: ${window.location.href}\n\n問題の詳細:\n`;
     
-    // メール作成（実際の環境では適切な報告システムに置き換え）
     const mailtoLink = `mailto:admin@example.com?subject=試験問題の報告&body=${encodeURIComponent(message)}`;
     window.location.href = mailtoLink;
 }
 
 // キーボードショートカット
 document.addEventListener('keydown', function(e) {
-    // Escキーでモーダルを閉じる
     if (e.key === 'Escape') {
         const modal = bootstrap.Modal.getInstance(document.getElementById('imageModal'));
         if (modal) modal.hide();
     }
     
-    // Ctrl+Pで印刷
     if (e.ctrlKey && e.key === 'p') {
         e.preventDefault();
-        printPage();
+        printExamQuestions();
     }
 });
 

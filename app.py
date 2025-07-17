@@ -10,18 +10,30 @@ from typing import Final, Optional
 import unicodedata
 import hashlib
 import secrets
+import os
 from datetime import datetime
 from functools import wraps
+from werkzeug.utils import secure_filename
 
-from flask import Flask, g, redirect, render_template, request, url_for, flash, session
+from flask import Flask, g, redirect, render_template, request, url_for, flash, session, send_from_directory
 from werkzeug import Response
 
 # データベースのファイル名
 DATABASE: Final[str] = 'database.db'
 
+# アップロードファイルの設定
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff'}
+MAX_FILE_SIZE = 16 * 1024 * 1024  # 16MB
+
 # Flask クラスのインスタンス
 app = Flask(__name__)
 app.secret_key = 'exam_management_secret_key_2024'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
+
+# アップロードフォルダが存在しない場合は作成
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # 処理結果コードとメッセージ
 RESULT_MESSAGES: Final[dict[str, str]] = {
@@ -34,8 +46,16 @@ RESULT_MESSAGES: Final[dict[str, str]] = {
     'logout-success': 'ログアウトしました',
     'register-success': 'ユーザー登録が完了しました',
     'invalid-credentials': 'メールアドレスまたはパスワードが正しくありません',
-    'email-exists': 'このメールアドレスは既に登録されています'
+    'email-exists': 'このメールアドレスは既に登録されています',
+    'file-upload-error': 'ファイルのアップロードに失敗しました',
+    'file-too-large': 'ファイルサイズが大きすぎます（最大16MB）',
+    'invalid-file-type': '許可されていないファイル形式です'
 }
+
+def allowed_file(filename):
+    """アップロードが許可されているファイルかチェック"""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def get_db() -> sqlite3.Connection:
     """データベース接続を得る"""
@@ -244,10 +264,25 @@ def exams() -> str:
     """試験一覧のページ"""
     cur = get_db().cursor()
     
+    # 明示的なJOINを使用してデータを取得
     exam_list = cur.execute('''
-        SELECT exam_id, 学部名, 学科名, 科目名, 試験種別, 年度, 担当者
-        FROM ExamDetailView 
-        ORDER BY 年度 DESC, 学部名, 学科名, 科目名
+        SELECT 
+            e.exam_id,
+            f.faculty_name,
+            d.department_name,
+            s.subject_name,
+            et.exam_type_name,
+            e.exam_year,
+            GROUP_CONCAT(p.professor_name, ', ') AS professors
+        FROM Exams e
+        JOIN Subjects s ON e.subject_id = s.subject_id
+        JOIN Departments d ON s.department_id = d.department_id
+        JOIN Faculties f ON d.faculty_id = f.faculty_id
+        JOIN ExamTypes et ON e.exam_type_id = et.exam_type_id
+        LEFT JOIN ExamProfessors ep ON e.exam_id = ep.exam_id
+        LEFT JOIN Professors p ON ep.professor_id = p.professor_id
+        GROUP BY e.exam_id, f.faculty_name, d.department_name, s.subject_name, et.exam_type_name, e.exam_year
+        ORDER BY e.exam_year DESC, f.faculty_name, d.department_name, s.subject_name
     ''').fetchall()
     
     return render_template('exams/list.html', exam_list=exam_list)
@@ -264,30 +299,52 @@ def exams_filtered() -> str:
     year_filter = request.form.get('year_filter', '').strip()
     subject_filter = request.form.get('subject_filter', '').strip()
     
-    query = 'SELECT exam_id, 学部名, 学科名, 科目名, 試験種別, 年度, 担当者 FROM ExamDetailView WHERE 1=1'
+    # 明示的なJOINを使用してデータを取得
+    query = '''
+        SELECT 
+            e.exam_id,
+            f.faculty_name,
+            d.department_name,
+            s.subject_name,
+            et.exam_type_name,
+            e.exam_year,
+            GROUP_CONCAT(p.professor_name, ', ') AS professors
+        FROM Exams e
+        JOIN Subjects s ON e.subject_id = s.subject_id
+        JOIN Departments d ON s.department_id = d.department_id
+        JOIN Faculties f ON d.faculty_id = f.faculty_id
+        JOIN ExamTypes et ON e.exam_type_id = et.exam_type_id
+        LEFT JOIN ExamProfessors ep ON e.exam_id = ep.exam_id
+        LEFT JOIN Professors p ON ep.professor_id = p.professor_id
+        WHERE 1=1
+    '''
     params = []
     
     if faculty_filter:
-        query += ' AND 学部名 LIKE ?'
+        query += ' AND f.faculty_name LIKE ?'
         params.append(f'%{faculty_filter}%')
     
     if department_filter:
-        query += ' AND 学科名 LIKE ?'
+        query += ' AND d.department_name LIKE ?'
         params.append(f'%{department_filter}%')
     
     if subject_filter:
-        query += ' AND 科目名 LIKE ?'
+        query += ' AND s.subject_name LIKE ?'
         params.append(f'%{subject_filter}%')
     
     if year_filter:
         try:
             year = int(year_filter)
-            query += ' AND 年度 = ?'
+            query += ' AND e.exam_year = ?'
             params.append(year)
         except ValueError:
             flash('年度は数値で入力してください', 'error')
     
-    query += ' ORDER BY 年度 DESC, 学部名, 学科名, 科目名'
+    query += '''
+        GROUP BY e.exam_id, f.faculty_name, d.department_name, s.subject_name, et.exam_type_name, e.exam_year
+        ORDER BY e.exam_year DESC, f.faculty_name, d.department_name, s.subject_name
+    '''
+    
     exam_list = cur.execute(query, params).fetchall()
     
     return render_template('exams/list.html', exam_list=exam_list,
@@ -302,8 +359,26 @@ def exam_detail(exam_id: int) -> str:
     """試験詳細ページ"""
     cur = get_db().cursor()
     
+    # 試験詳細情報を取得
     exam = cur.execute('''
-        SELECT * FROM ExamDetailView WHERE exam_id = ?
+        SELECT 
+            e.exam_id,
+            f.faculty_name,
+            d.department_name,
+            s.subject_name,
+            et.exam_type_name,
+            e.exam_year,
+            e.instructions,
+            GROUP_CONCAT(p.professor_name, ', ') AS professors
+        FROM Exams e
+        JOIN Subjects s ON e.subject_id = s.subject_id
+        JOIN Departments d ON s.department_id = d.department_id
+        JOIN Faculties f ON d.faculty_id = f.faculty_id
+        JOIN ExamTypes et ON e.exam_type_id = et.exam_type_id
+        LEFT JOIN ExamProfessors ep ON e.exam_id = ep.exam_id
+        LEFT JOIN Professors p ON ep.professor_id = p.professor_id
+        WHERE e.exam_id = ?
+        GROUP BY e.exam_id, f.faculty_name, d.department_name, s.subject_name, et.exam_type_name, e.exam_year, e.instructions
     ''', (exam_id,)).fetchone()
     
     if exam is None:
@@ -316,35 +391,18 @@ def exam_detail(exam_id: int) -> str:
     
     return render_template('exams/detail.html', exam=exam, questions=questions)
 
-@app.route('/subjects')
-@login_required
-def subjects() -> str:
-    """科目一覧のページ"""
-    cur = get_db().cursor()
-    
-    subject_list = cur.execute('''
-        SELECT s.subject_id, f.faculty_name, d.department_name, s.subject_name,
-               s.subject_type, s.semester, s.grade_level
-        FROM Subjects s
-        JOIN Departments d ON s.department_id = d.department_id
-        JOIN Faculties f ON d.faculty_id = f.faculty_id
-        ORDER BY f.faculty_name, d.department_name, s.grade_level, s.subject_name
-    ''').fetchall()
-    
-    return render_template('subjects/list.html', subject_list=subject_list)
+
 
 @app.route('/exam-add')
 @login_required
 def exam_add() -> str:
-    """試験追加ページ（新しい学部・学科選択式、科目・教員自由入力）"""
-    from flask import send_from_directory
+    """試験追加ページ"""
     return render_template('exams/add.html')
 
 @app.route('/exam-add', methods=['POST'])
 @login_required
 def exam_add_execute() -> Response:
     """試験追加実行"""
-    from urllib.parse import quote
     con = get_db()
     cur = con.cursor()
     
@@ -364,8 +422,8 @@ def exam_add_execute() -> Response:
         # バリデーション
         if not all([faculty_id, department_id, subject_name, subject_type, 
                    semester, grade_level, professor_name, exam_type_id, exam_year]):
-            message = quote('すべての必須項目を入力してください')
-            return redirect(f'/exam-add?message={message}&type=error')
+            flash('すべての必須項目を入力してください', 'error')
+            return redirect(url_for('exam_add'))
         
         try:
             faculty_id = int(faculty_id)
@@ -374,30 +432,30 @@ def exam_add_execute() -> Response:
             exam_type_id = int(exam_type_id)
             exam_year = int(exam_year)
         except ValueError:
-            message = quote('入力値に不正な値が含まれています')
-            return redirect(f'/exam-add?message={message}&type=error')
+            flash('入力値に不正な値が含まれています', 'error')
+            return redirect(url_for('exam_add'))
         
         # 年度の妥当性チェック
         if exam_year < 2000 or exam_year > 2030:
-            message = quote('年度は2000年から2030年の間で入力してください')
-            return redirect(f'/exam-add?message={message}&type=error')
+            flash('年度は2000年から2030年の間で入力してください', 'error')
+            return redirect(url_for('exam_add'))
         
         # 制御文字チェック
         if any(has_control_character(s) for s in [subject_name, professor_name, instructions]):
-            message = quote('入力値に制御文字が含まれています')
-            return redirect(f'/exam-add?message={message}&type=error')
+            flash('入力値に制御文字が含まれています', 'error')
+            return redirect(url_for('exam_add'))
         
         # 科目種別と学期の妥当性チェック
         valid_subject_types = ['必修', '選択必修', '一般教養']
         valid_semesters = ['春学期', '春学期前半', '春学期後半', '秋学期', '秋学期前半', '秋学期後半']
         
         if subject_type not in valid_subject_types:
-            message = quote('不正な科目種別です')
-            return redirect(f'/exam-add?message={message}&type=error')
+            flash('不正な科目種別です', 'error')
+            return redirect(url_for('exam_add'))
         
         if semester not in valid_semesters:
-            message = quote('不正な学期です')
-            return redirect(f'/exam-add?message={message}&type=error')
+            flash('不正な学期です', 'error')
+            return redirect(url_for('exam_add'))
         
         # 学科の存在確認
         dept_check = cur.execute('''
@@ -406,8 +464,8 @@ def exam_add_execute() -> Response:
         ''', (department_id, faculty_id)).fetchone()
         
         if not dept_check:
-            message = quote('選択された学部・学科の組み合わせが正しくありません')
-            return redirect(f'/exam-add?message={message}&type=error')
+            flash('選択された学部・学科の組み合わせが正しくありません', 'error')
+            return redirect(url_for('exam_add'))
         
         # 科目を検索または新規作成
         existing_subject = cur.execute('''
@@ -447,8 +505,8 @@ def exam_add_execute() -> Response:
         ''', (subject_id, exam_type_id, exam_year)).fetchone()
         
         if existing_exam:
-            message = quote('同じ科目・試験種別・年度の試験が既に存在します')
-            return redirect(f'/exam-add?message={message}&type=error')
+            flash('同じ科目・試験種別・年度の試験が既に存在します', 'error')
+            return redirect(url_for('exam_add'))
         
         # 試験を作成
         cur.execute('''
@@ -475,18 +533,59 @@ def exam_add_execute() -> Response:
                 VALUES (?, ?, ?, ?)
             ''', (subject_id, professor_id, exam_year, semester))
         
+        # ファイルアップロード処理
+        uploaded_files = request.files.getlist('exam_files')
+        file_upload_errors = []
+        
+        for file in uploaded_files:
+            if file and file.filename:
+                if allowed_file(file.filename):
+                    try:
+                        filename = secure_filename(file.filename)
+                        # ファイル名の重複を避けるためタイムスタンプを付加
+                        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                        name, ext = os.path.splitext(filename)
+                        filename = f"{name}_{timestamp}{ext}"
+                        
+                        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                        file.save(filepath)
+                        
+                        # データベースに問題画像を登録
+                        cur.execute('''
+                            INSERT INTO ExamQuestions (exam_id, picture)
+                            VALUES (?, ?)
+                        ''', (exam_id, filename))
+                        
+                    except Exception as e:
+                        file_upload_errors.append(f"ファイル '{file.filename}' のアップロードに失敗しました: {str(e)}")
+                else:
+                    file_upload_errors.append(f"ファイル '{file.filename}' は許可されていない形式です")
+        
         con.commit()
-        flash('試験を正常に作成しました', 'success')
+        
+        # アップロードエラーがあれば警告として表示
+        if file_upload_errors:
+            flash('試験は正常に作成されましたが、一部のファイルでエラーが発生しました: ' + 
+                  ', '.join(file_upload_errors), 'warning')
+        else:
+            flash('試験を正常に作成しました', 'success')
+        
         return redirect(url_for('exams'))
         
     except sqlite3.Error as e:
         con.rollback()
-        message = quote('データベースエラーが発生しました')
-        return redirect(f'/exam-add?message={message}&type=error')
+        flash('データベースエラーが発生しました', 'error')
+        return redirect(url_for('exam_add'))
     except Exception as e:
         con.rollback()
-        message = quote('予期しないエラーが発生しました')
-        return redirect(f'/exam-add?message={message}&type=error')
+        flash('予期しないエラーが発生しました', 'error')
+        return redirect(url_for('exam_add'))
+
+# ファイル提供用のルート
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    """アップロードされたファイルを提供"""
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
     app.run(debug=True)

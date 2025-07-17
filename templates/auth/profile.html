@@ -146,18 +146,14 @@
                                 <i class="fas fa-file-alt me-2"></i>
                                 試験一覧
                             </a>
-                            <a href="{{ url_for('subjects') }}" class="btn btn-outline-success btn-sm">
-                                <i class="fas fa-book me-2"></i>
-                                科目一覧
-                            </a>
-                            <a href="{{ url_for('professors') }}" class="btn btn-outline-info btn-sm">
-                                <i class="fas fa-chalkboard-teacher me-2"></i>
-                                教員一覧
+                            <a href="{{ url_for('exam_add') }}" class="btn btn-outline-warning btn-sm">
+                                <i class="fas fa-plus-circle me-2"></i>
+                                試験追加
                             </a>
                             {% if session.user_type in ['admin', 'staff'] %}
-                                <a href="{{ url_for('statistics') }}" class="btn btn-outline-warning btn-sm">
+                                <a href="{{ url_for('home') }}" class="btn btn-outline-info btn-sm">
                                     <i class="fas fa-chart-bar me-2"></i>
-                                    統計情報
+                                    ダッシュボード
                                 </a>
                             {% endif %}
                         </div>
