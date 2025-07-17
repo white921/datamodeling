@@ -185,6 +185,14 @@
                     <a href="{{ url_for('exams') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> 試験一覧に戻る
                     </a>
+                    
+                    <!-- 編集ボタン：作成者のみ表示 -->
+                    {% if session.user_id and exam.created_by == session.user_id %}
+                    <a href="{{ url_for('exam_edit', exam_id=exam.exam_id) }}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> 試験を編集
+                    </a>
+                    {% endif %}
+                    
                     <button class="btn btn-outline-primary" onclick="printExamQuestions()">
                         <i class="fas fa-print"></i> 試験問題を印刷
                     </button>
@@ -221,6 +229,8 @@
     </div>
 </div>
 
+<!-- templates/exams/detail.htmlの最後のJavaScript部分を以下に置き換え -->
+
 <!-- 印刷用の隠しデータ -->
 <script type="application/json" id="exam-data">
 {
@@ -243,12 +253,11 @@
     ]
 }
 </script>
-{% endblock %}
 
 {% block scripts %}
 <script>
-// 試験データを取得
-const examData = JSON.parse(document.getElementById('exam-data').textContent);
+// 試験データを取得（変数名を変更）
+const examDetailData = JSON.parse(document.getElementById('exam-data').textContent);
 
 // 画像拡大モーダル
 function openImageModal(imageSrc, title) {
@@ -269,7 +278,7 @@ function downloadImage() {
 
 // 試験問題画像のみを印刷
 function printExamQuestions() {
-    if (examData.questions.length === 0) {
+    if (examDetailData.questions.length === 0) {
         alert('印刷可能な試験問題が見つかりません。');
         return;
     }
@@ -283,7 +292,7 @@ function printExamQuestions() {
         <html>
         <head>
             <meta charset="UTF-8">
-            <title>${examData.title} - ${examData.examType} (${examData.year}年度)</title>
+            <title>${examDetailData.title} - ${examDetailData.examType} (${examDetailData.year}年度)</title>
             <style>
                 @page {
                     margin: 20mm;
@@ -366,21 +375,21 @@ function printExamQuestions() {
         </head>
         <body>
             <div class="print-header">
-                <h1>${examData.title}</h1>
-                <p>${examData.faculty} ${examData.department} - ${examData.examType} (${examData.year}年度)</p>`;
+                <h1>${examDetailData.title}</h1>
+                <p>${examDetailData.faculty} ${examDetailData.department} - ${examDetailData.examType} (${examDetailData.year}年度)</p>`;
                 
-    if (examData.professor) {
-        printContent += `<p>担当: ${examData.professor}</p>`;
+    if (examDetailData.professor) {
+        printContent += `<p>担当: ${examDetailData.professor}</p>`;
     }
     
-    if (examData.instructions) {
-        printContent += `<p style="font-size: 11px; margin-top: 10px;">${examData.instructions}</p>`;
+    if (examDetailData.instructions) {
+        printContent += `<p style="font-size: 11px; margin-top: 10px;">${examDetailData.instructions}</p>`;
     }
     
     printContent += `</div>`;
     
     // 各問題を印刷用に追加
-    examData.questions.forEach((question, index) => {
+    examDetailData.questions.forEach((question, index) => {
         printContent += `<div class="question-container">`;
         printContent += `<div class="question-title">問題 ${question.id}</div>`;
         
@@ -428,7 +437,7 @@ function printExamQuestions() {
 // 試験情報共有
 function shareExam() {
     const url = window.location.href;
-    const title = `${examData.title}(${examData.examType}, ${examData.year}年度)`;
+    const title = `${examDetailData.title}(${examDetailData.examType}, ${examDetailData.year}年度)`;
     
     if (navigator.share) {
         navigator.share({
@@ -444,7 +453,7 @@ function shareExam() {
 
 // 問題報告
 function reportIssue() {
-    const examInfo = `${examData.title}(${examData.examType}, ${examData.year}年度)`;
+    const examInfo = `${examDetailData.title}(${examDetailData.examType}, ${examDetailData.year}年度)`;
     const message = `以下の試験について問題を報告します:\n\n試験: ${examInfo}\nURL: ${window.location.href}\n\n問題の詳細:\n`;
     
     const mailtoLink = `mailto:admin@example.com?subject=試験問題の報告&body=${encodeURIComponent(message)}`;
