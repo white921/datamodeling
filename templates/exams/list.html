@@ -12,6 +12,11 @@
     </div>
 </div>
 
+<!-- ユーザー情報を安全にJavaScriptに渡すための隠し要素 -->
+<div id="user-data" 
+     data-user-id="{{ session.user_id if session.user_id else '' }}" 
+     style="display: none;"></div>
+
 <!-- 検索フォーム -->
 <div class="row mb-4">
     <div class="col-12">
@@ -95,13 +100,18 @@
                             </thead>
                             <tbody>
                                 {% for exam in exam_list %}
-                                <tr>
+                                <tr data-created-by="{{ exam[7] if exam[7] else '' }}">
                                     <td>
                                         <span class="badge bg-secondary">{{ exam[1] }}</span>
                                     </td>
                                     <td>{{ exam[2] }}</td>
                                     <td>
                                         <strong>{{ exam[3] }}</strong>
+                                        {% if session.user_id and exam[7] == session.user_id %}
+                                            <small class="text-success d-block my-creation-mark">
+                                                <i class="fas fa-user-check"></i> あなたが作成
+                                            </small>
+                                        {% endif %}
                                     </td>
                                     <td>
                                         <span class="badge bg-info">{{ exam[4] }}</span>
@@ -117,10 +127,20 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <a href="{{ url_for('exam_detail', exam_id=exam[0]) }}" 
-                                           class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-eye"></i> 詳細
-                                        </a>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('exam_detail', exam_id=exam[0]) }}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> 詳細
+                                            </a>
+                                            <!-- 作成者のみに編集ボタンを表示 -->
+                                            {% if session.user_id and exam[7] == session.user_id %}
+                                                <a href="{{ url_for('exam_edit', exam_id=exam[0]) }}" 
+                                                   class="btn btn-sm btn-outline-warning"
+                                                   title="あなたが作成した試験です">
+                                                    <i class="fas fa-edit"></i> 編集
+                                                </a>
+                                            {% endif %}
+                                        </div>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -173,6 +193,26 @@
 </div>
 {% endif %}
 
+<!-- 自分が作成した試験のみ表示するフィルター -->
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <button type="button" class="btn btn-outline-success btn-sm" onclick="toggleMyExams()">
+                    <i class="fas fa-user"></i> 自分の試験のみ表示
+                </button>
+                <small class="text-muted ms-2" id="filter-status"></small>
+            </div>
+            <div>
+                <span class="text-muted">
+                    <i class="fas fa-info-circle"></i> 
+                    編集ボタンは作成者のみに表示されます
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- 試験追加ボタン -->
 <div class="row mt-4">
     <div class="col-12">
@@ -191,6 +231,13 @@
 
 {% block scripts %}
 <script>
+// ユーザー情報を安全に取得
+function getCurrentUserId() {
+    const userDataElement = document.getElementById('user-data');
+    const userId = userDataElement.dataset.userId;
+    return userId ? parseInt(userId) : null;
+}
+
 function filterByYear(year) {
     document.getElementById('year_filter').value = year;
     document.querySelector('form').submit();
@@ -201,16 +248,74 @@ function filterByFaculty(faculty) {
     document.querySelector('form').submit();
 }
 
+// 自分の試験のみ表示するフィルター
+let showOnlyMyExams = false;
+
+function toggleMyExams() {
+    const currentUserId = getCurrentUserId();
+    const rows = document.querySelectorAll('tbody tr');
+    const button = document.querySelector('button[onclick="toggleMyExams()"]');
+    const status = document.getElementById('filter-status');
+    
+    if (!currentUserId) {
+        alert('ログインが必要です');
+        return;
+    }
+    
+    showOnlyMyExams = !showOnlyMyExams;
+    
+    let visibleCount = 0;
+    rows.forEach(row => {
+        const createdBy = getCreatedByFromRow(row);
+        
+        if (showOnlyMyExams) {
+            if (createdBy === currentUserId) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        } else {
+            row.style.display = '';
+            visibleCount++;
+        }
+    });
+    
+    if (showOnlyMyExams) {
+        button.innerHTML = '<i class="fas fa-users"></i> すべての試験を表示';
+        button.className = 'btn btn-success btn-sm';
+        status.textContent = `あなたの試験: ${visibleCount}件`;
+    } else {
+        button.innerHTML = '<i class="fas fa-user"></i> 自分の試験のみ表示';
+        button.className = 'btn btn-outline-success btn-sm';
+        status.textContent = '';
+    }
+    
+    // 試験数バッジを更新
+    const badge = document.querySelector('.badge.bg-primary');
+    if (badge) {
+        badge.textContent = `${visibleCount}件`;
+    }
+}
+
+// 行から作成者IDを安全に取得する関数
+function getCreatedByFromRow(row) {
+    const createdBy = row.dataset.createdBy;
+    return createdBy ? parseInt(createdBy) : null;
+}
+
 // テーブルの行ホバー効果
 document.addEventListener('DOMContentLoaded', function() {
     const rows = document.querySelectorAll('tbody tr');
     rows.forEach(row => {
-        row.addEventListener('click', function() {
-            const detailBtn = this.querySelector('.btn-outline-primary');
-            if (detailBtn) {
-                window.location.href = detailBtn.href;
-            }
-        });
+        // 行全体のクリックは詳細ページに飛ばず、ボタンのみで操作
+        row.style.cursor = 'default';
+    });
+    
+    // 作成者マークにツールチップ効果
+    const creationMarks = document.querySelectorAll('.my-creation-mark');
+    creationMarks.forEach(mark => {
+        mark.title = 'あなたが作成した試験です。編集権限があります。';
     });
 });
 </script>
@@ -243,16 +348,16 @@ document.addEventListener('DOMContentLoaded', function() {
     .badge {
         font-size: 0.7rem;
     }
+    
+    .btn-group .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
 }
 
 /* テーブル行のホバー効果 */
-tbody tr {
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
 tbody tr:hover {
-    background-color: rgba(0, 123, 255, 0.1) !important;
+    background-color: rgba(0, 123, 255, 0.05) !important;
 }
 
 /* 検索フォームの改善 */
@@ -268,6 +373,27 @@ tbody tr:hover {
 
 .d-flex.gap-2 > *:not(:last-child) {
     margin-right: 0.5rem;
+}
+
+/* 作成者マークのスタイリング */
+.my-creation-mark {
+    font-weight: 500;
+}
+
+/* ボタングループの間隔調整 */
+.btn-group .btn {
+    margin-left: 0;
+}
+
+.btn-group .btn:not(:first-child) {
+    border-left: 1px solid rgba(0,0,0,0.1);
+}
+
+/* 編集ボタンの特別スタイル */
+.btn-outline-warning:hover {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
 }
 </style>
 {% endblock %}

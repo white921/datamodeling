@@ -78,7 +78,7 @@ def init_database():
             )
         ''')
         
-        # 試験テーブル
+        # 試験テーブル（created_byカラムとupdated_atカラムを追加）
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS Exams (
                 exam_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -86,9 +86,12 @@ def init_database():
                 exam_type_id INTEGER NOT NULL,
                 exam_year INTEGER NOT NULL,
                 instructions TEXT,
+                created_by INTEGER,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (subject_id) REFERENCES Subjects(subject_id),
                 FOREIGN KEY (exam_type_id) REFERENCES ExamTypes(exam_type_id),
+                FOREIGN KEY (created_by) REFERENCES Users(user_id) ON DELETE SET NULL,
                 UNIQUE(subject_id, exam_type_id, exam_year)
             )
         ''')
@@ -337,46 +340,46 @@ def init_database():
         subject_ids = cursor.execute('SELECT subject_id, subject_name FROM Subjects ORDER BY subject_id').fetchall()
         print(f"作成された科目: {subject_ids}")
         
-        # サンプル試験（各学部の代表的な科目の試験）
+        # サンプル試験（各学部の代表的な科目の試験）- created_byを追加
         exams = [
-            # 文学部
-            (1, 1, 2024, '哲学概論の定期試験です。古代から現代までの哲学史を問います。'),
-            (2, 1, 2024, '日本史概説の定期試験です。'),
-            (3, 1, 2024, '英文学概論の定期試験です。'),
+            # 文学部 (user1が作成)
+            (1, 1, 2024, '哲学概論の定期試験です。古代から現代までの哲学史を問います。', 1),
+            (2, 1, 2024, '日本史概説の定期試験です。', 1),
+            (3, 1, 2024, '英文学概論の定期試験です。', 1),
             
-            # 経済学部
-            (4, 1, 2024, 'ミクロ経済学の定期試験です。需要・供給曲線を中心に出題。'),
-            (5, 1, 2024, 'マクロ経済学の定期試験です。'),
-            (6, 1, 2024, '計量経済学の定期試験です。'),
+            # 経済学部 (user2が作成)
+            (5, 1, 2024, 'ミクロ経済学の定期試験です。需要・供給曲線を中心に出題。', 2),
+            (6, 1, 2024, 'マクロ経済学の定期試験です。', 2),
+            (7, 1, 2024, '計量経済学の定期試験です。', 2),
             
-            # 法学部
-            (7, 1, 2024, '憲法の定期試験です。基本的人権を中心に出題。'),
-            (8, 1, 2024, '民法の定期試験です。'),
-            (9, 1, 2024, '刑法の定期試験です。'),
-            (10, 1, 2024, '政治学原論の定期試験です。'),
+            # 法学部 (user3が作成)
+            (9, 1, 2024, '憲法の定期試験です。基本的人権を中心に出題。', 3),
+            (10, 1, 2024, '民法の定期試験です。', 3),
+            (11, 1, 2024, '刑法の定期試験です。', 3),
+            (13, 1, 2024, '政治学原論の定期試験です。', 3),
             
-            # 商学部
-            (12, 1, 2024, '商学総論の定期試験です。'),
-            (13, 1, 2024, '会計学の定期試験です。'),
+            # 商学部 (user4が作成)
+            (17, 1, 2024, '商学総論の定期試験です。', 4),
+            (18, 1, 2024, '会計学の定期試験です。', 4),
             
-            # 理工学部
-            (22, 1, 2024, 'プログラミング第1の定期試験です。C言語の基礎を問います。'),
-            (23, 1, 2024, 'プログラミング第2の定期試験です。'),
-            (24, 1, 2024, 'データ構造とアルゴリズムの定期試験です。'),
+            # 理工学部 (user5が作成)
+            (37, 1, 2024, 'プログラミング第1の定期試験です。C言語の基礎を問います。', 5),
+            (38, 1, 2024, 'プログラミング第2の定期試験です。', 5),
+            (39, 1, 2024, 'データ構造とアルゴリズムの定期試験です。', 5),
             
-            # 総合政策学部・環境情報学部
-            (26, 1, 2024, '総合政策学の定期試験です。'),
-            (28, 1, 2024, '情報基礎の定期試験です。'),
+            # 総合政策学部・環境情報学部 (user1が作成)
+            (42, 1, 2024, '総合政策学の定期試験です。', 1),
+            (45, 1, 2024, '情報基礎の定期試験です。', 1),
             
-            # 看護医療学部・薬学部
-            (30, 1, 2024, '看護学概論の定期試験です。'),
-            (32, 1, 2024, '薬学概論の定期試験です。')
+            # 看護医療学部・薬学部 (user2が作成)
+            (48, 1, 2024, '看護学概論の定期試験です。', 2),
+            (51, 1, 2024, '薬学概論の定期試験です。', 2)
         ]
         
         for exam in exams:
             cursor.execute('''
-                INSERT OR IGNORE INTO Exams (subject_id, exam_type_id, exam_year, instructions)
-                VALUES (?, ?, ?, ?)
+                INSERT OR IGNORE INTO Exams (subject_id, exam_type_id, exam_year, instructions, created_by)
+                VALUES (?, ?, ?, ?, ?)
             ''', exam)
         
         # コミットして、実際のexam_idを取得
@@ -391,8 +394,8 @@ def init_database():
         subject_professors = [
             # 基本的なサンプル割り当て
             (1, 1, 2024, '春学期'),        # 哲学概論 - サンプル教員1
-            (4, 2, 2024, '春学期'),        # ミクロ経済学 - サンプル教員2
-            (7, 3, 2024, '春学期'),        # 憲法 - サンプル教員3
+            (5, 2, 2024, '春学期'),        # ミクロ経済学 - サンプル教員2
+            (9, 3, 2024, '春学期'),        # 憲法 - サンプル教員3
             (37, 1, 2024, '春学期'),       # プログラミング第1 - サンプル教員1
         ]
         

@@ -8,8 +8,6 @@
 import sqlite3
 from typing import Final, Optional
 import unicodedata
-import hashlib
-import secrets
 import os
 from datetime import datetime
 from functools import wraps
@@ -74,20 +72,12 @@ def close_connection(exception: Optional[BaseException]) -> None:
         db.close()
 
 def hash_password(password: str) -> str:
-    """パスワードをハッシュ化"""
-    salt = secrets.token_hex(16)
-    hash_obj = hashlib.sha256()
-    hash_obj.update((password + salt).encode('utf-8'))
-    return salt + hash_obj.hexdigest()
+    """パスワードをそのまま返す（平文版）"""
+    return password
 
 def verify_password(password: str, password_hash: str) -> bool:
-    """パスワードを検証"""
-    if len(password_hash) < 32:
-        return False
-    salt = password_hash[:32]
-    hash_obj = hashlib.sha256()
-    hash_obj.update((password + salt).encode('utf-8'))
-    return salt + hash_obj.hexdigest() == password_hash
+    """パスワードを検証（平文版）"""
+    return password == password_hash
 
 def login_required(f):
     """ログイン必須デコレータ"""
@@ -264,7 +254,7 @@ def exams() -> str:
     """試験一覧のページ"""
     cur = get_db().cursor()
     
-    # 明示的なJOINを使用してデータを取得
+    # 明示的なJOINを使用してデータを取得（作成者情報も含める）
     exam_list = cur.execute('''
         SELECT 
             e.exam_id,
@@ -273,7 +263,8 @@ def exams() -> str:
             s.subject_name,
             et.exam_type_name,
             e.exam_year,
-            GROUP_CONCAT(p.professor_name, ', ') AS professors
+            GROUP_CONCAT(p.professor_name, ', ') AS professors,
+            e.created_by
         FROM Exams e
         JOIN Subjects s ON e.subject_id = s.subject_id
         JOIN Departments d ON s.department_id = d.department_id
@@ -281,7 +272,7 @@ def exams() -> str:
         JOIN ExamTypes et ON e.exam_type_id = et.exam_type_id
         LEFT JOIN ExamProfessors ep ON e.exam_id = ep.exam_id
         LEFT JOIN Professors p ON ep.professor_id = p.professor_id
-        GROUP BY e.exam_id, f.faculty_name, d.department_name, s.subject_name, et.exam_type_name, e.exam_year
+        GROUP BY e.exam_id, f.faculty_name, d.department_name, s.subject_name, et.exam_type_name, e.exam_year, e.created_by
         ORDER BY e.exam_year DESC, f.faculty_name, d.department_name, s.subject_name
     ''').fetchall()
     
@@ -299,7 +290,7 @@ def exams_filtered() -> str:
     year_filter = request.form.get('year_filter', '').strip()
     subject_filter = request.form.get('subject_filter', '').strip()
     
-    # 明示的なJOINを使用してデータを取得
+    # 明示的なJOINを使用してデータを取得（作成者情報も含める）
     query = '''
         SELECT 
             e.exam_id,
@@ -308,7 +299,8 @@ def exams_filtered() -> str:
             s.subject_name,
             et.exam_type_name,
             e.exam_year,
-            GROUP_CONCAT(p.professor_name, ', ') AS professors
+            GROUP_CONCAT(p.professor_name, ', ') AS professors,
+            e.created_by
         FROM Exams e
         JOIN Subjects s ON e.subject_id = s.subject_id
         JOIN Departments d ON s.department_id = d.department_id
@@ -341,7 +333,7 @@ def exams_filtered() -> str:
             flash('年度は数値で入力してください', 'error')
     
     query += '''
-        GROUP BY e.exam_id, f.faculty_name, d.department_name, s.subject_name, et.exam_type_name, e.exam_year
+        GROUP BY e.exam_id, f.faculty_name, d.department_name, s.subject_name, et.exam_type_name, e.exam_year, e.created_by
         ORDER BY e.exam_year DESC, f.faculty_name, d.department_name, s.subject_name
     '''
     
@@ -369,7 +361,8 @@ def exam_detail(exam_id: int) -> str:
             et.exam_type_name,
             e.exam_year,
             e.instructions,
-            GROUP_CONCAT(p.professor_name, ', ') AS professors
+            GROUP_CONCAT(p.professor_name, ', ') AS professors,
+            e.created_by
         FROM Exams e
         JOIN Subjects s ON e.subject_id = s.subject_id
         JOIN Departments d ON s.department_id = d.department_id
@@ -378,7 +371,7 @@ def exam_detail(exam_id: int) -> str:
         LEFT JOIN ExamProfessors ep ON e.exam_id = ep.exam_id
         LEFT JOIN Professors p ON ep.professor_id = p.professor_id
         WHERE e.exam_id = ?
-        GROUP BY e.exam_id, f.faculty_name, d.department_name, s.subject_name, et.exam_type_name, e.exam_year, e.instructions
+        GROUP BY e.exam_id, f.faculty_name, d.department_name, s.subject_name, et.exam_type_name, e.exam_year, e.instructions, e.created_by
     ''', (exam_id,)).fetchone()
     
     if exam is None:
@@ -390,8 +383,6 @@ def exam_detail(exam_id: int) -> str:
     ''', (exam_id,)).fetchall()
     
     return render_template('exams/detail.html', exam=exam, questions=questions)
-
-
 
 @app.route('/exam-add')
 @login_required
@@ -479,10 +470,10 @@ def exam_add_execute() -> Response:
         else:
             # 新しい科目を作成
             cur.execute('''
-                INSERT INTO Exams (subject_id, exam_type_id, exam_year, instructions, created_by)
+                INSERT INTO Subjects (department_id, subject_name, subject_type, semester, grade_level)
                 VALUES (?, ?, ?, ?, ?)
-            ''', (subject_id, exam_type_id, exam_year, instructions, session['user_id']))
-            exam_id = cur.lastrowid
+            ''', (department_id, subject_name, subject_type, semester, grade_level))
+            subject_id = cur.lastrowid
         
         # 教員を検索または新規作成
         existing_professor = cur.execute('''
@@ -508,11 +499,11 @@ def exam_add_execute() -> Response:
             flash('同じ科目・試験種別・年度の試験が既に存在します', 'error')
             return redirect(url_for('exam_add'))
         
-        # 試験を作成
+        # 試験を作成（created_byを設定）
         cur.execute('''
-            INSERT INTO Exams (subject_id, exam_type_id, exam_year, instructions)
-            VALUES (?, ?, ?, ?)
-        ''', (subject_id, exam_type_id, exam_year, instructions))
+            INSERT INTO Exams (subject_id, exam_type_id, exam_year, instructions, created_by)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (subject_id, exam_type_id, exam_year, instructions, session['user_id']))
         exam_id = cur.lastrowid
         
         # 試験担当教員を設定
@@ -574,11 +565,11 @@ def exam_add_execute() -> Response:
         
     except sqlite3.Error as e:
         con.rollback()
-        flash('データベースエラーが発生しました', 'error')
+        flash(f'データベースエラーが発生しました: {e}', 'error')
         return redirect(url_for('exam_add'))
     except Exception as e:
         con.rollback()
-        flash('予期しないエラーが発生しました', 'error')
+        flash(f'予期しないエラーが発生しました: {e}', 'error')
         return redirect(url_for('exam_add'))
 
 # ファイル提供用のルート
@@ -586,8 +577,6 @@ def exam_add_execute() -> Response:
 def uploaded_file(filename):
     """アップロードされたファイルを提供"""
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
-# app.pyに追加するルート（既存のexam_add_execute()の後に追加）
 
 @app.route('/exam-edit/<int:exam_id>')
 @login_required
@@ -649,6 +638,213 @@ def exam_edit(exam_id: int) -> str:
                          exam=exam, 
                          professor_names=professor_names,
                          questions=questions)
+
+# app.pyに追加する試験編集更新処理
+
+@app.route('/exam-edit/<int:exam_id>', methods=['POST'])
+@login_required
+def exam_edit_update(exam_id: int) -> Response:
+    """試験編集更新実行"""
+    con = get_db()
+    cur = con.cursor()
+    
+    try:
+        # 試験の存在と権限チェック
+        exam = cur.execute('''
+            SELECT created_by FROM Exams WHERE exam_id = ?
+        ''', (exam_id,)).fetchone()
+        
+        if exam is None:
+            flash('指定された試験が見つかりません', 'error')
+            return redirect(url_for('exams'))
+        
+        # 作成者チェック
+        if exam['created_by'] != session['user_id']:
+            flash('この試験を編集する権限がありません', 'error')
+            return redirect(url_for('exam_detail', exam_id=exam_id))
+        
+        # フォームデータ取得
+        faculty_id = request.form.get('faculty_id')
+        department_id = request.form.get('department_id')
+        subject_name = request.form.get('subject_name', '').strip()
+        subject_type = request.form.get('subject_type', '').strip()
+        semester = request.form.get('semester', '').strip()
+        grade_level = request.form.get('grade_level')
+        professor_name = request.form.get('professor_name', '').strip()
+        exam_type_id = request.form.get('exam_type_id')
+        exam_year = request.form.get('exam_year')
+        instructions = request.form.get('instructions', '').strip()
+        
+        # バリデーション
+        if not all([faculty_id, department_id, subject_name, subject_type, 
+                   semester, grade_level, professor_name, exam_type_id, exam_year]):
+            flash('すべての必須項目を入力してください', 'error')
+            return redirect(url_for('exam_edit', exam_id=exam_id))
+        
+        try:
+            faculty_id = int(faculty_id)
+            department_id = int(department_id)
+            grade_level = int(grade_level)
+            exam_type_id = int(exam_type_id)
+            exam_year = int(exam_year)
+        except ValueError:
+            flash('入力値に不正な値が含まれています', 'error')
+            return redirect(url_for('exam_edit', exam_id=exam_id))
+        
+        # 年度の妥当性チェック
+        if exam_year < 2000 or exam_year > 2030:
+            flash('年度は2000年から2030年の間で入力してください', 'error')
+            return redirect(url_for('exam_edit', exam_id=exam_id))
+        
+        # 制御文字チェック
+        if any(has_control_character(s) for s in [subject_name, professor_name, instructions]):
+            flash('入力値に制御文字が含まれています', 'error')
+            return redirect(url_for('exam_edit', exam_id=exam_id))
+        
+        # 科目種別と学期の妥当性チェック
+        valid_subject_types = ['必修', '選択必修', '一般教養']
+        valid_semesters = ['春学期', '春学期前半', '春学期後半', '秋学期', '秋学期前半', '秋学期後半']
+        
+        if subject_type not in valid_subject_types:
+            flash('不正な科目種別です', 'error')
+            return redirect(url_for('exam_edit', exam_id=exam_id))
+        
+        if semester not in valid_semesters:
+            flash('不正な学期です', 'error')
+            return redirect(url_for('exam_edit', exam_id=exam_id))
+        
+        # 学科の存在確認
+        dept_check = cur.execute('''
+            SELECT department_id FROM Departments 
+            WHERE department_id = ? AND faculty_id = ?
+        ''', (department_id, faculty_id)).fetchone()
+        
+        if not dept_check:
+            flash('選択された学部・学科の組み合わせが正しくありません', 'error')
+            return redirect(url_for('exam_edit', exam_id=exam_id))
+        
+        # 現在の試験に関連する科目IDを取得
+        current_exam = cur.execute('''
+            SELECT subject_id FROM Exams WHERE exam_id = ?
+        ''', (exam_id,)).fetchone()
+        
+        current_subject_id = current_exam['subject_id']
+        
+        # 科目を検索または新規作成（現在の科目と異なる場合のみ）
+        existing_subject = cur.execute('''
+            SELECT subject_id FROM Subjects 
+            WHERE department_id = ? AND subject_name = ? AND subject_type = ? 
+            AND semester = ? AND grade_level = ?
+        ''', (department_id, subject_name, subject_type, semester, grade_level)).fetchone()
+        
+        if existing_subject:
+            subject_id = existing_subject['subject_id']
+        else:
+            # 新しい科目を作成
+            cur.execute('''
+                INSERT INTO Subjects (department_id, subject_name, subject_type, semester, grade_level)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (department_id, subject_name, subject_type, semester, grade_level))
+            subject_id = cur.lastrowid
+        
+        # 教員を検索または新規作成
+        existing_professor = cur.execute('''
+            SELECT professor_id FROM Professors WHERE professor_name = ?
+        ''', (professor_name,)).fetchone()
+        
+        if existing_professor:
+            professor_id = existing_professor['professor_id']
+        else:
+            # 新しい教員を作成
+            cur.execute('''
+                INSERT INTO Professors (professor_name) VALUES (?)
+            ''', (professor_name,))
+            professor_id = cur.lastrowid
+        
+        # 同じ科目・試験種別・年度の組み合わせが他に存在するかチェック（自分以外）
+        existing_exam = cur.execute('''
+            SELECT exam_id FROM Exams 
+            WHERE subject_id = ? AND exam_type_id = ? AND exam_year = ? AND exam_id != ?
+        ''', (subject_id, exam_type_id, exam_year, exam_id)).fetchone()
+        
+        if existing_exam:
+            flash('同じ科目・試験種別・年度の試験が既に存在します', 'error')
+            return redirect(url_for('exam_edit', exam_id=exam_id))
+        
+        # 試験情報を更新
+        cur.execute('''
+            UPDATE Exams 
+            SET subject_id = ?, exam_type_id = ?, exam_year = ?, instructions = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE exam_id = ?
+        ''', (subject_id, exam_type_id, exam_year, instructions, exam_id))
+        
+        # 既存の試験担当教員を削除して新しく設定
+        cur.execute('DELETE FROM ExamProfessors WHERE exam_id = ?', (exam_id,))
+        cur.execute('''
+            INSERT INTO ExamProfessors (exam_id, professor_id)
+            VALUES (?, ?)
+        ''', (exam_id, professor_id))
+        
+        # 科目担当教員も設定（存在しない場合のみ）
+        existing_assignment = cur.execute('''
+            SELECT 1 FROM SubjectProfessors 
+            WHERE subject_id = ? AND professor_id = ? AND assignment_year = ? AND assignment_semester = ?
+        ''', (subject_id, professor_id, exam_year, semester)).fetchone()
+        
+        if not existing_assignment:
+            cur.execute('''
+                INSERT INTO SubjectProfessors (subject_id, professor_id, assignment_year, assignment_semester)
+                VALUES (?, ?, ?, ?)
+            ''', (subject_id, professor_id, exam_year, semester))
+        
+        # 新しいファイルのアップロード処理
+        uploaded_files = request.files.getlist('exam_files')
+        file_upload_errors = []
+        
+        for file in uploaded_files:
+            if file and file.filename:
+                if allowed_file(file.filename):
+                    try:
+                        filename = secure_filename(file.filename)
+                        # ファイル名の重複を避けるためタイムスタンプを付加
+                        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                        name, ext = os.path.splitext(filename)
+                        filename = f"{name}_{timestamp}{ext}"
+                        
+                        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                        file.save(filepath)
+                        
+                        # データベースに問題画像を登録
+                        cur.execute('''
+                            INSERT INTO ExamQuestions (exam_id, picture)
+                            VALUES (?, ?)
+                        ''', (exam_id, filename))
+                        
+                    except Exception as e:
+                        file_upload_errors.append(f"ファイル '{file.filename}' のアップロードに失敗しました: {str(e)}")
+                else:
+                    file_upload_errors.append(f"ファイル '{file.filename}' は許可されていない形式です")
+        
+        con.commit()
+        
+        # アップロードエラーがあれば警告として表示
+        if file_upload_errors:
+            flash('試験は正常に更新されましたが、一部のファイルでエラーが発生しました: ' + 
+                  ', '.join(file_upload_errors), 'warning')
+        else:
+            flash('試験を正常に更新しました', 'success')
+        
+        # 試験一覧画面にリダイレクト
+        return redirect(url_for('exams'))
+        
+    except sqlite3.Error as e:
+        con.rollback()
+        flash(f'データベースエラーが発生しました: {e}', 'error')
+        return redirect(url_for('exam_edit', exam_id=exam_id))
+    except Exception as e:
+        con.rollback()
+        flash(f'予期しないエラーが発生しました: {e}', 'error')
+        return redirect(url_for('exam_edit', exam_id=exam_id))
 
 @app.route('/exam-file-delete/<int:question_id>', methods=['DELETE'])
 @login_required

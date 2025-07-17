@@ -229,8 +229,9 @@
     </div>
 </div>
 
-<!-- templates/exams/detail.htmlの最後のJavaScript部分を以下に置き換え -->
+{% endblock %}
 
+{% block scripts %}
 <!-- 印刷用の隠しデータ -->
 <script type="application/json" id="exam-data">
 {
@@ -253,8 +254,6 @@
     ]
 }
 </script>
-
-{% block scripts %}
 <script>
 // 試験データを取得（変数名を変更）
 const examDetailData = JSON.parse(document.getElementById('exam-data').textContent);
@@ -486,37 +485,37 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-/* 印刷用スタイル */
-@media print {
-    .btn, .modal, nav, .card-header h5 {
-        display: none !important;
+    /* 印刷用スタイル */
+    @media print {
+        .btn, .modal, nav, .card-header h5 {
+            display: none !important;
+        }
+        
+        .card {
+            border: 1px solid #000 !important;
+            page-break-inside: avoid;
+        }
+        
+        .badge {
+            border: 1px solid #000 !important;
+            color: #000 !important;
+        }
     }
-    
-    .card {
-        border: 1px solid #000 !important;
-        page-break-inside: avoid;
+
+    /* カードホバー効果 */
+    .card:hover {
+        transform: translateY(-2px);
+        transition: transform 0.2s ease-in-out;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-    
-    .badge {
-        border: 1px solid #000 !important;
-        color: #000 !important;
+
+    /* 画像ホバー効果 */
+    img[onclick] {
+        transition: transform 0.2s ease-in-out;
     }
-}
 
-/* カードホバー効果 */
-.card:hover {
-    transform: translateY(-2px);
-    transition: transform 0.2s ease-in-out;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-/* 画像ホバー効果 */
-img[onclick] {
-    transition: transform 0.2s ease-in-out;
-}
-
-img[onclick]:hover {
-    transform: scale(1.05);
-}
+    img[onclick]:hover {
+        transform: scale(1.05);
+    }
 </style>
 {% endblock %}
