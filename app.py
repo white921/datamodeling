@@ -16,22 +16,28 @@ from werkzeug.utils import secure_filename
 from flask import Flask, g, redirect, render_template, request, url_for, flash, session, send_from_directory
 from werkzeug import Response
 
-# データベースのファイル名
-DATABASE: Final[str] = 'database.db'
+# データベースのファイル名（絶対パス対応）
+DATABASE: Final[str] = os.environ.get('DATABASE_PATH', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database.db'))
 
-# アップロードファイルの設定
-UPLOAD_FOLDER = 'static/uploads'
+# アップロードファイルの設定（絶対パス対応）
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'uploads')
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff'}
 MAX_FILE_SIZE = 16 * 1024 * 1024  # 16MB
 
 # Flask クラスのインスタンス
 app = Flask(__name__)
-app.secret_key = 'exam_management_secret_key_2024'
+app.secret_key = os.environ.get('SECRET_KEY', 'exam_management_secret_key_2024')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
 
 # アップロードフォルダが存在しない場合は作成
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+try:
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+except Exception as e:
+    # 権限がない場合は一時的なフォルダを使用
+    import tempfile
+    UPLOAD_FOLDER = tempfile.mkdtemp()
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # 処理結果コードとメッセージ
 RESULT_MESSAGES: Final[dict[str, str]] = {
@@ -59,9 +65,15 @@ def get_db() -> sqlite3.Connection:
     """データベース接続を得る"""
     db = getattr(g, '_database', None)
     if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-        db.execute('PRAGMA foreign_keys = ON')
-        db.row_factory = sqlite3.Row
+        try:
+            db = g._database = sqlite3.connect(DATABASE)
+            db.execute('PRAGMA foreign_keys = ON')
+            db.row_factory = sqlite3.Row
+        except Exception as e:
+            # データベース接続エラーの場合、詳細をログに出力
+            import sys
+            print(f"Database connection error: {e}", file=sys.stderr)
+            raise
     return db
 
 @app.teardown_appcontext
@@ -97,16 +109,26 @@ def has_control_character(s: str) -> bool:
 @app.route('/')
 def index() -> Response:
     """トップページ - ログインページにリダイレクト"""
-    if 'user_id' in session:
-        return redirect(url_for('home'))
-    return redirect(url_for('login'))
+    try:
+        if 'user_id' in session:
+            return redirect(url_for('home'))
+        return redirect(url_for('login'))
+    except Exception as e:
+        import sys
+        print(f"Index route error: {e}", file=sys.stderr)
+        return render_template('error/500.html'), 500
 
 @app.route('/login')
 def login() -> str:
     """ログインページ"""
-    if 'user_id' in session:
-        return redirect(url_for('home'))
-    return render_template('auth/login.html')
+    try:
+        if 'user_id' in session:
+            return redirect(url_for('home'))
+        return render_template('auth/login.html')
+    except Exception as e:
+        import sys
+        print(f"Login route error: {e}", file=sys.stderr)
+        return render_template('error/500.html'), 500
 
 @app.route('/login', methods=['POST'])
 def login_execute() -> Response:
