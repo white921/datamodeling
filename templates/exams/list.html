@@ -132,13 +132,26 @@
                                                class="btn btn-sm btn-outline-primary">
                                                 <i class="fas fa-eye"></i> 詳細
                                             </a>
-                                            <!-- 作成者のみに編集ボタンを表示 -->
+                                            <!-- 作成者のみに編集・削除ボタンを表示 -->
                                             {% if session.user_id and exam[7] == session.user_id %}
                                                 <a href="{{ url_for('exam_edit', exam_id=exam[0]) }}" 
                                                    class="btn btn-sm btn-outline-warning"
                                                    title="あなたが作成した試験です">
                                                     <i class="fas fa-edit"></i> 編集
                                                 </a>
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-outline-danger exam-delete-btn"
+                                                        data-exam-id="{{ exam[0] }}"
+                                                        data-subject-name="{{ exam[3] }}"
+                                                        data-exam-type="{{ exam[4] }}"
+                                                        data-exam-year="{{ exam[5] }}"
+                                                        data-faculty="{{ exam[1] }}"
+                                                        data-department="{{ exam[2] }}"
+                                                        data-professor="{{ exam[6] or '' }}"
+                                                        title="試験を削除"
+                                                        onclick="openDeleteModal(this)">
+                                                    <i class="fas fa-trash"></i> 削除
+                                                </button>
                                             {% endif %}
                                         </div>
                                     </td>
@@ -161,6 +174,39 @@
         {% endif %}
     </div>
 </div>
+
+<!-- 削除確認モーダル -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteConfirmModalLabel">
+                    <i class="fas fa-exclamation-triangle"></i> 試験削除確認
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                    <div>
+                        <strong>重要な警告</strong><br>
+                        この操作は元に戻すことができません
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> キャンセル
+                </button>
+                <button type="button" class="btn btn-danger" onclick="executeDelete()" id="deleteExecuteBtn">
+                    <i class="fas fa-trash"></i> 削除実行
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <!-- クイックフィルター -->
 {% if exam_list %}
@@ -318,6 +364,173 @@ document.addEventListener('DOMContentLoaded', function() {
         mark.title = 'あなたが作成した試験です。編集権限があります。';
     });
 });
+
+let currentExamId = null;
+let currentExamData = {};
+
+// 削除モーダルを開く
+function openDeleteModal(button) {
+    // ボタンからデータを取得
+    const examId = button.getAttribute('data-exam-id');
+    const subjectName = button.getAttribute('data-subject-name');
+    const examType = button.getAttribute('data-exam-type');
+    const examYear = button.getAttribute('data-exam-year');
+    const faculty = button.getAttribute('data-faculty');
+    const department = button.getAttribute('data-department');
+    const professor = button.getAttribute('data-professor');
+    
+    currentExamId = examId;
+    currentExamData = {
+        id: examId,
+        subject: subjectName,
+        examType: examType,
+        year: examYear,
+        faculty: faculty,
+        department: department,
+        professor: professor
+    };
+    
+    // モーダルを表示
+    const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+    modal.show();
+}
+
+// 削除実行
+function executeDelete() {
+    if (!currentExamId) return;
+    
+    // 確認モーダルを閉じる
+    const confirmModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
+    confirmModal.hide();
+    
+    // Ajax で削除実行
+    fetch(`/exam-delete-ajax/${currentExamId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // 成功時は行をアニメーションで削除
+            const row = document.querySelector(`button[data-exam-id="${currentExamId}"]`).closest('tr');
+            
+            if (row) {
+                // 成功アニメーション
+                row.style.transition = 'all 0.5s ease-out';
+                row.style.backgroundColor = '#d4edda';
+                row.style.transform = 'scale(0.95)';
+                
+                setTimeout(() => {
+                    row.style.opacity = '0';
+                    row.style.transform = 'translateX(-100%)';
+                    
+                    setTimeout(() => {
+                        row.remove();
+                        updateExamCount();
+                        showSuccessToast(data.message);
+                    }, 500);
+                }, 300);
+            } else {
+                // 行が見つからない場合はページをリロード
+                showSuccessToast(data.message);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
+        } else {
+            showErrorAlert(data.message || '削除に失敗しました');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showErrorAlert('削除中にエラーが発生しました: ' + error.message);
+    });
+}
+
+// 成功トーストを表示
+function showSuccessToast(message) {
+    const toastHtml = `
+        <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i>${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    `;
+    
+    // トーストコンテナがなければ作成
+    let toastContainer = document.querySelector('.toast-container');
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+        document.body.appendChild(toastContainer);
+    }
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    const toastElement = toastContainer.lastElementChild;
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+    
+    // 5秒後に自動削除
+    setTimeout(() => {
+        if (toastElement && toastElement.parentNode) {
+            toastElement.remove();
+        }
+    }, 5000);
+}
+
+// エラーアラートを表示
+function showErrorAlert(message) {
+    const alertHtml = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <strong>エラー:</strong> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // ページの最初に挿入
+    const firstCard = document.querySelector('.card');
+    firstCard.insertAdjacentHTML('beforebegin', alertHtml);
+    
+    // 5秒後に自動削除
+    setTimeout(() => {
+        const alert = document.querySelector('.alert-danger');
+        if (alert) {
+            alert.remove();
+        }
+    }, 5000);
+}
+
+// 試験数カウントを更新
+function updateExamCount() {
+    const visibleRows = document.querySelectorAll('tbody tr:not([style*="display: none"])');
+    const badge = document.querySelector('.badge.bg-primary');
+    if (badge) {
+        badge.textContent = `${visibleRows.length}件`;
+    }
+}
+
+// モーダルのキーボード操作
+document.addEventListener('keydown', function(e) {
+    const modal = document.getElementById('deleteConfirmModal');
+    if (modal.classList.contains('show')) {
+        if (e.key === 'Enter' && e.ctrlKey) {
+            e.preventDefault();
+            executeDelete();
+        }
+    }
+});
+
 </script>
 
 <style>
@@ -394,6 +607,80 @@ tbody tr:hover {
     background-color: #ffc107;
     border-color: #ffc107;
     color: #000;
+}
+
+/* モーダルスタイル */
+.modal-content {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.modal-header.bg-danger {
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.exam-info-card {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.exam-info-card .row {
+    margin-bottom: 8px;
+}
+
+.exam-info-card .row:last-child {
+    margin-bottom: 0;
+}
+
+/* 削除ボタンのホバー効果 */
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(220,53,69,0.3);
+}
+
+/* 進行状況モーダル */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* トーストのスタイル */
+.toast {
+    min-width: 300px;
+}
+
+.toast-container {
+    z-index: 1060;
+}
+
+/* アニメーション */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+}
+
+.modal.show .modal-dialog {
+    transform: none;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .modal-dialog {
+        margin: 1rem;
+    }
+    
+    .exam-info-card .row {
+        margin-bottom: 10px;
+    }
+    
+    .col-sm-3 {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
 }
 </style>
 {% endblock %}

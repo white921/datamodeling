@@ -888,6 +888,212 @@ def exam_file_delete(question_id: int):
     except Exception as e:
         con.rollback()
         return {'success': False, 'message': f'削除中にエラーが発生しました: {str(e)}'}, 500
+    
+@app.route('/exam-delete/<int:exam_id>')
+@login_required
+def exam_delete(exam_id: int) -> str:
+    """試験削除確認ページ"""
+    cur = get_db().cursor()
+    
+    # 試験情報を取得
+    exam = cur.execute('''
+        SELECT 
+            e.exam_id,
+            f.faculty_name,
+            d.department_name,
+            s.subject_name,
+            et.exam_type_name,
+            e.exam_year,
+            e.instructions,
+            e.created_by,
+            GROUP_CONCAT(DISTINCT p.professor_name, ', ') AS professors
+        FROM Exams e
+        JOIN Subjects s ON e.subject_id = s.subject_id
+        JOIN Departments d ON s.department_id = d.department_id
+        JOIN Faculties f ON d.faculty_id = f.faculty_id
+        JOIN ExamTypes et ON e.exam_type_id = et.exam_type_id
+        LEFT JOIN ExamProfessors ep ON e.exam_id = ep.exam_id
+        LEFT JOIN Professors p ON ep.professor_id = p.professor_id
+        WHERE e.exam_id = ?
+        GROUP BY e.exam_id, f.faculty_name, d.department_name, s.subject_name, et.exam_type_name, e.exam_year, e.instructions, e.created_by
+    ''', (exam_id,)).fetchone()
+    
+    if exam is None:
+        flash('指定された試験が見つかりません', 'error')
+        return redirect(url_for('exams'))
+    
+    # 作成者チェック
+    if exam['created_by'] != session['user_id']:
+        flash('この試験を削除する権限がありません', 'error')
+        return redirect(url_for('exam_detail', exam_id=exam_id))
+    
+    # 試験問題ファイルを取得
+    questions = cur.execute('''
+        SELECT question_id, picture FROM ExamQuestions WHERE exam_id = ?
+    ''', (exam_id,)).fetchall()
+    
+    return render_template('exams/delete.html', exam=exam, questions=questions)
+
+@app.route('/exam-delete/<int:exam_id>', methods=['POST'])
+@login_required
+def exam_delete_execute(exam_id: int) -> Response:
+    """試験削除実行"""
+    con = get_db()
+    cur = con.cursor()
+    
+    try:
+        # 試験の存在と権限チェック
+        exam = cur.execute('''
+            SELECT e.created_by, s.subject_name, et.exam_type_name, e.exam_year
+            FROM Exams e
+            JOIN Subjects s ON e.subject_id = s.subject_id
+            JOIN ExamTypes et ON e.exam_type_id = et.exam_type_id
+            WHERE e.exam_id = ?
+        ''', (exam_id,)).fetchone()
+        
+        if exam is None:
+            flash('指定された試験が見つかりません', 'error')
+            return redirect(url_for('exams'))
+        
+        # 作成者チェック
+        if exam['created_by'] != session['user_id']:
+            flash('この試験を削除する権限がありません', 'error')
+            return redirect(url_for('exam_detail', exam_id=exam_id))
+        
+        # 削除対象の試験情報を保存（メッセージ用）
+        exam_info = f"{exam['subject_name']}（{exam['exam_type_name']}、{exam['exam_year']}年度）"
+        
+        # 関連するファイルを取得
+        questions = cur.execute('''
+            SELECT picture FROM ExamQuestions WHERE exam_id = ?
+        ''', (exam_id,)).fetchall()
+        
+        # 関連ファイルの物理削除
+        deleted_files = []
+        failed_files = []
+        
+        for question in questions:
+            if question['picture']:
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], question['picture'])
+                if os.path.exists(file_path):
+                    try:
+                        os.remove(file_path)
+                        deleted_files.append(question['picture'])
+                    except OSError as e:
+                        failed_files.append(question['picture'])
+                        # ファイル削除に失敗してもデータベースからは削除続行
+                        print(f"ファイル削除失敗: {question['picture']}, エラー: {e}")
+        
+        # 関連データを正しい順序で削除（外部キー制約を考慮）
+        # 1. 試験問題ファイルを削除
+        cur.execute('DELETE FROM ExamQuestions WHERE exam_id = ?', (exam_id,))
+        
+        # 2. 試験担当教員を削除
+        cur.execute('DELETE FROM ExamProfessors WHERE exam_id = ?', (exam_id,))
+        
+        # 3. 最後に試験を削除
+        cur.execute('DELETE FROM Exams WHERE exam_id = ?', (exam_id,))
+        
+        con.commit()
+        
+        # 削除結果のメッセージ作成
+        success_message = f'試験「{exam_info}」を削除しました'
+        if deleted_files:
+            success_message += f'（{len(deleted_files)}個のファイルも削除）'
+        if failed_files:
+            success_message += f'（注意: {len(failed_files)}個のファイルの削除に失敗）'
+        
+        flash(success_message, 'success')
+        return redirect(url_for('exams'))
+        
+    except sqlite3.Error as e:
+        con.rollback()
+        flash(f'データベースエラーが発生しました: {e}', 'error')
+        return redirect(url_for('exam_detail', exam_id=exam_id))
+    except Exception as e:
+        con.rollback()
+        flash(f'予期しないエラーが発生しました: {e}', 'error')
+        return redirect(url_for('exam_detail', exam_id=exam_id))
+
+@app.route('/exam-delete-ajax/<int:exam_id>', methods=['DELETE'])
+@login_required
+def exam_delete_ajax(exam_id: int):
+    """Ajax による試験削除（一覧画面から）"""
+    con = get_db()
+    cur = con.cursor()
+    
+    try:
+        # 試験の存在と権限チェック
+        exam = cur.execute('''
+            SELECT e.created_by, s.subject_name, et.exam_type_name, e.exam_year
+            FROM Exams e
+            JOIN Subjects s ON e.subject_id = s.subject_id
+            JOIN ExamTypes et ON e.exam_type_id = et.exam_type_id
+            WHERE e.exam_id = ?
+        ''', (exam_id,)).fetchone()
+        
+        if exam is None:
+            return {'success': False, 'message': '指定された試験が見つかりません'}, 404
+        
+        # 作成者チェック
+        if exam['created_by'] != session['user_id']:
+            return {'success': False, 'message': 'この試験を削除する権限がありません'}, 403
+        
+        # 削除対象の試験情報を保存
+        exam_info = f"{exam['subject_name']}（{exam['exam_type_name']}、{exam['exam_year']}年度）"
+        
+        # 関連するファイルを取得
+        questions = cur.execute('''
+            SELECT picture FROM ExamQuestions WHERE exam_id = ?
+        ''', (exam_id,)).fetchall()
+        
+        # 関連ファイルの物理削除
+        deleted_files = []
+        failed_files = []
+        
+        for question in questions:
+            if question['picture']:
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], question['picture'])
+                if os.path.exists(file_path):
+                    try:
+                        os.remove(file_path)
+                        deleted_files.append(question['picture'])
+                    except OSError:
+                        failed_files.append(question['picture'])
+                        # ファイル削除に失敗してもデータベースからは削除続行
+        
+        # 関連データを正しい順序で削除（外部キー制約を考慮）
+        # 1. 試験問題ファイルを削除
+        cur.execute('DELETE FROM ExamQuestions WHERE exam_id = ?', (exam_id,))
+        
+        # 2. 試験担当教員を削除
+        cur.execute('DELETE FROM ExamProfessors WHERE exam_id = ?', (exam_id,))
+        
+        # 3. 最後に試験を削除
+        cur.execute('DELETE FROM Exams WHERE exam_id = ?', (exam_id,))
+        
+        con.commit()
+        
+        # 削除結果のメッセージ作成
+        success_message = f'試験「{exam_info}」を削除しました'
+        if deleted_files:
+            success_message += f'（{len(deleted_files)}個のファイルも削除）'
+        if failed_files:
+            success_message += f'（注意: {len(failed_files)}個のファイルの削除に失敗）'
+        
+        return {
+            'success': True, 
+            'message': success_message,
+            'deleted_files': len(deleted_files),
+            'failed_files': len(failed_files)
+        }
+        
+    except sqlite3.Error as e:
+        con.rollback()
+        return {'success': False, 'message': f'データベースエラーが発生しました: {str(e)}'}, 500
+    except Exception as e:
+        con.rollback()
+        return {'success': False, 'message': f'予期しないエラーが発生しました: {str(e)}'}, 500
 
 if __name__ == '__main__':
     app.run(debug=True)

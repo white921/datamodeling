@@ -186,11 +186,25 @@
                         <i class="fas fa-arrow-left"></i> 試験一覧に戻る
                     </a>
                     
-                    <!-- 編集ボタン：作成者のみ表示 -->
+                    <!-- 編集・削除ボタン：作成者のみ表示 -->
                     {% if session.user_id and exam.created_by == session.user_id %}
                     <a href="{{ url_for('exam_edit', exam_id=exam.exam_id) }}" class="btn btn-warning">
                         <i class="fas fa-edit"></i> 試験を編集
                     </a>
+                    <button type="button" 
+                            class="btn btn-danger" 
+                            id="detail-delete-btn"
+                            data-exam-id="{{ exam.exam_id }}"
+                            data-subject-name="{{ exam[3] }}"
+                            data-exam-type="{{ exam[4] }}"
+                            data-exam-year="{{ exam[5] }}"
+                            data-faculty="{{ exam[1] }}"
+                            data-department="{{ exam[2] }}"
+                            data-professor="{{ exam[7] or '' }}"
+                            data-instructions="{{ exam[6] or '' }}"
+                            onclick="openDeleteModal(this)">
+                        <i class="fas fa-trash"></i> 試験を削除
+                    </button>
                     {% endif %}
                     
                     <button class="btn btn-outline-primary" onclick="printExamQuestions()">
@@ -224,6 +238,179 @@
                 <button type="button" class="btn btn-primary" onclick="downloadImage()">
                     <i class="fas fa-download"></i> ダウンロード
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 詳細削除確認モーダル -->
+<div class="modal fade" id="detailDeleteModal" tabindex="-1" aria-labelledby="detailDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="detailDeleteModalLabel">
+                    <i class="fas fa-exclamation-triangle"></i> 試験削除確認
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle fa-3x me-3"></i>
+                    <div>
+                        <h6 class="fw-bold mb-2">重要な警告</h6>
+                        <p class="mb-0">
+                            この試験を<strong>完全に削除</strong>しようとしています。<br>
+                            この操作は<strong>元に戻すことができません</strong>。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 試験情報 -->
+                <div class="exam-detail-info">
+                    <h6 class="fw-bold mb-3">
+                        <i class="fas fa-file-alt text-primary"></i> 削除対象の試験
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless table-sm">
+                                <tbody>
+                                    <tr>
+                                        <th class="text-muted" style="width: 100px;">学部:</th>
+                                        <td>{{ exam[1] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">学科:</th>
+                                        <td>{{ exam[2] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">科目名:</th>
+                                        <td><strong>{{ exam[3] }}</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless table-sm">
+                                <tbody>
+                                    <tr>
+                                        <th class="text-muted" style="width: 100px;">試験種別:</th>
+                                        <td>{{ exam[4] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">年度:</th>
+                                        <td>{{ exam[5] }}年度</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">担当者:</th>
+                                        <td>{{ exam[7] or '未設定' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    {% if exam[6] %}
+                    <div class="alert alert-info mt-3">
+                        <h6 class="fw-bold">
+                            <i class="fas fa-info-circle"></i> 注意事項
+                        </h6>
+                        <p class="mb-0">{{ exam[6] }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- 関連ファイル -->
+                {% if questions %}
+                <div class="files-section mt-4">
+                    <h6 class="fw-bold text-danger">
+                        <i class="fas fa-files-o"></i> 同時に削除されるファイル
+                    </h6>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>{{ questions|length }}個のファイル</strong>も同時に削除されます
+                    </div>
+                    <div class="files-grid">
+                        {% for question in questions %}
+                        <div class="file-item">
+                            <div class="file-icon">
+                                {% if question.picture.lower().endswith('.pdf') %}
+                                    <i class="fas fa-file-pdf text-danger"></i>
+                                {% elif question.picture.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')) %}
+                                    <i class="fas fa-file-image text-success"></i>
+                                {% else %}
+                                    <i class="fas fa-file text-secondary"></i>
+                                {% endif %}
+                            </div>
+                            <div class="file-info">
+                                <div class="file-name">{{ question.picture }}</div>
+                                <small class="text-muted">問題 {{ loop.index }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- 削除内容の確認 -->
+                <div class="deletion-summary mt-4">
+                    <h6 class="fw-bold text-danger">
+                        <i class="fas fa-trash"></i> 削除される内容
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>試験情報</li>
+                                <li><i class="fas fa-check text-success me-2"></i>試験問題データ</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>関連ファイル（{{ questions|length }}個）</li>
+                                <li><i class="fas fa-check text-success me-2"></i>担当者情報</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 最終確認 -->
+                <div class="final-confirmation mt-4">
+                    <div class="alert alert-danger">
+                        <h6 class="fw-bold">最終確認</h6>
+                        <p class="mb-3">本当にこの試験を削除しますか？</p>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="confirmDelete" onchange="toggleDeleteButton()">
+                            <label class="form-check-label fw-bold" for="confirmDelete">
+                                理解しました。この操作は元に戻せないことを承知で削除します。
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> キャンセル
+                </button>
+                <button type="button" class="btn btn-danger" onclick="executeDetailDelete()" id="detailDeleteBtn" disabled>
+                    <i class="fas fa-trash"></i> 削除実行
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 削除進行状況モーダル（詳細版） -->
+<div class="modal fade" id="detailDeleteProgressModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-danger mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">削除中...</span>
+                </div>
+                <h5 class="fw-bold mb-2">削除中です...</h5>
+                <p class="text-muted mb-0">試験データとファイルを削除しています</p>
+                <div class="progress mt-3" style="height: 6px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" style="width: 0%"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -482,6 +669,205 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// 詳細削除モーダルを開く
+function openDetailDeleteModal() {
+    const modal = new bootstrap.Modal(document.getElementById('detailDeleteModal'));
+    modal.show();
+}
+
+// 削除モーダルを開く（ボタンクリック時）
+function openDeleteModal(button) {
+    // ボタンからexam_idを取得
+    const examId = button.getAttribute('data-exam-id');
+    
+    // グローバル変数に保存
+    window.currentExamData = {
+        id: examId,
+        subjectName: button.getAttribute('data-subject-name'),
+        examType: button.getAttribute('data-exam-type'),
+        examYear: button.getAttribute('data-exam-year'),
+        faculty: button.getAttribute('data-faculty'),
+        department: button.getAttribute('data-department'),
+        professor: button.getAttribute('data-professor'),
+        instructions: button.getAttribute('data-instructions')
+    };
+    
+    // モーダルを開く
+    const modal = new bootstrap.Modal(document.getElementById('detailDeleteModal'));
+    modal.show();
+}
+
+// 削除ボタンの有効/無効を切り替え
+function toggleDeleteButton() {
+    const checkbox = document.getElementById('confirmDelete');
+    const button = document.getElementById('detailDeleteBtn');
+    
+    if (checkbox.checked) {
+        button.disabled = false;
+        button.innerHTML = '<i class="fas fa-trash"></i> 削除実行';
+    } else {
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-trash"></i> 削除実行';
+    }
+}
+
+// 詳細削除実行
+function executeDetailDelete() {
+    const examId = window.currentExamData.id;
+    
+    // 確認モーダルを閉じる
+    const confirmModal = bootstrap.Modal.getInstance(document.getElementById('detailDeleteModal'));
+    confirmModal.hide();
+    
+    // 進行状況モーダルを表示
+    const progressModal = new bootstrap.Modal(document.getElementById('detailDeleteProgressModal'));
+    progressModal.show();
+    
+    // プログレスバーアニメーション
+    let progress = 0;
+    const progressBar = document.querySelector('#detailDeleteProgressModal .progress-bar');
+    const progressInterval = setInterval(() => {
+        progress += Math.random() * 30;
+        if (progress > 90) progress = 90;
+        progressBar.style.width = progress + '%';
+    }, 200);
+    
+    // Ajax で削除実行
+    fetch(`/exam-delete-ajax/${examId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        clearInterval(progressInterval);
+        
+        if (data.success) {
+            // 成功時は100%にしてから閉じる
+            progressBar.style.width = '100%';
+            
+            setTimeout(() => {
+                progressModal.hide();
+                
+                // 成功メッセージを表示してから一覧ページに遷移
+                showSuccessModalAndRedirect(data.message);
+            }, 500);
+        } else {
+            progressModal.hide();
+            showErrorModal(data.message);
+        }
+    })
+    .catch(error => {
+        clearInterval(progressInterval);
+        console.error('Error:', error);
+        progressModal.hide();
+        showErrorModal('削除中にエラーが発生しました');
+    });
+}
+
+// 成功モーダルを表示して一覧ページに遷移
+function showSuccessModalAndRedirect(message) {
+    const successModalHtml = `
+        <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-check-circle"></i> 削除完了
+                        </h5>
+                    </div>
+                    <div class="modal-body text-center py-4">
+                        <i class="fas fa-check-circle text-success mb-3" style="font-size: 3rem;"></i>
+                        <h6 class="fw-bold">${message}</h6>
+                        <p class="text-muted">3秒後に試験一覧ページに移動します...</p>
+                        <div class="progress mt-3" style="height: 4px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', successModalHtml);
+    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    successModal.show();
+    
+    // 3秒のカウントダウン
+    let countdown = 3;
+    const progressBar = document.querySelector('#successModal .progress-bar');
+    const countdownInterval = setInterval(() => {
+        countdown--;
+        progressBar.style.width = ((3 - countdown) / 3 * 100) + '%';
+        
+        if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            window.location.href = "{{ url_for('exams') }}";
+        }
+    }, 1000);
+}
+
+// エラーモーダルを表示
+function showErrorModal(message) {
+    const errorModalHtml = `
+        <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-exclamation-circle"></i> 削除エラー
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body text-center py-4">
+                        <i class="fas fa-exclamation-triangle text-danger mb-3" style="font-size: 3rem;"></i>
+                        <h6 class="fw-bold text-danger">削除に失敗しました</h6>
+                        <p class="text-muted">${message}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times"></i> 閉じる
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="openDetailDeleteModal(); bootstrap.Modal.getInstance(document.getElementById('errorModal')).hide();">
+                            <i class="fas fa-redo"></i> 再試行
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', errorModalHtml);
+    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+    errorModal.show();
+    
+    // モーダルが閉じられたらHTML要素を削除
+    document.getElementById('errorModal').addEventListener('hidden.bs.modal', function() {
+        this.remove();
+    });
+}
+
+// モーダルのキーボード操作
+document.addEventListener('keydown', function(e) {
+    const modal = document.getElementById('detailDeleteModal');
+    if (modal && modal.classList.contains('show')) {
+        if (e.key === 'Enter' && e.ctrlKey) {
+            e.preventDefault();
+            const deleteBtn = document.getElementById('detailDeleteBtn');
+            if (!deleteBtn.disabled) {
+                executeDetailDelete();
+            }
+        }
+    }
+});
+
+// モーダルが閉じられたらチェックボックスをリセット
+document.getElementById('detailDeleteModal').addEventListener('hidden.bs.modal', function() {
+    document.getElementById('confirmDelete').checked = false;
+    toggleDeleteButton();
+});
 </script>
 
 <style>
@@ -516,6 +902,172 @@ document.addEventListener('DOMContentLoaded', function() {
 
     img[onclick]:hover {
         transform: scale(1.05);
+    }
+
+    /* 詳細削除モーダルのスタイル */
+    .modal-lg {
+        max-width: 800px;
+    }
+
+    .exam-detail-info {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .files-section {
+        background-color: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 20px;
+    }
+
+    .files-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .file-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        background-color: white;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .file-icon {
+        font-size: 24px;
+        margin-right: 12px;
+        width: 30px;
+        text-align: center;
+    }
+
+    .file-info {
+        flex-grow: 1;
+    }
+
+    .file-name {
+        font-weight: 500;
+        color: #333;
+        font-size: 14px;
+        word-break: break-all;
+    }
+
+    .deletion-summary {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 8px;
+        padding: 20px;
+    }
+
+    .final-confirmation {
+        border-top: 2px solid #dc3545;
+        padding-top: 20px;
+    }
+
+    .form-check-input:checked {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .form-check-input:focus {
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+
+    /* 削除ボタンの無効状態 */
+    .btn-danger:disabled {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        opacity: 0.6;
+    }
+
+    /* プログレスバーアニメーション */
+    .progress-bar-animated {
+        animation: progress-bar-stripes 1s linear infinite;
+    }
+
+    @keyframes progress-bar-stripes {
+        0% { background-position: 1rem 0; }
+        100% { background-position: 0 0; }
+    }
+
+    /* 成功・エラーアイコンのアニメーション */
+    .fas.fa-check-circle {
+        animation: bounceIn 0.5s ease-in-out;
+    }
+
+    .fas.fa-exclamation-triangle {
+        animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes bounceIn {
+        0% { transform: scale(0.3); opacity: 0; }
+        50% { transform: scale(1.05); }
+        70% { transform: scale(0.9); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+
+    /* レスポンシブ対応 */
+    @media (max-width: 768px) {
+        .modal-lg {
+            max-width: 95%;
+            margin: 0.5rem;
+        }
+        
+        .files-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .file-item {
+            padding: 10px;
+        }
+        
+        .file-icon {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        
+        .exam-detail-info .row {
+            margin-bottom: 15px;
+        }
+        
+        .exam-detail-info .col-md-6 {
+            margin-bottom: 15px;
+        }
+    }
+
+    /* ホバー効果 */
+    .btn-danger:not(:disabled):hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+    }
+
+    .file-item:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        transform: translateY(-1px);
+    }
+
+    /* アクセシビリティ向上 */
+    .btn:focus {
+        outline: 2px solid #007bff;
+        outline-offset: 2px;
+    }
+
+    .modal-header .btn-close:focus {
+        outline: 2px solid rgba(255,255,255,0.5);
     }
 </style>
 {% endblock %}
