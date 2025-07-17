@@ -479,10 +479,10 @@ def exam_add_execute() -> Response:
         else:
             # 新しい科目を作成
             cur.execute('''
-                INSERT INTO Subjects (department_id, subject_name, subject_type, semester, grade_level)
+                INSERT INTO Exams (subject_id, exam_type_id, exam_year, instructions, created_by)
                 VALUES (?, ?, ?, ?, ?)
-            ''', (department_id, subject_name, subject_type, semester, grade_level))
-            subject_id = cur.lastrowid
+            ''', (subject_id, exam_type_id, exam_year, instructions, session['user_id']))
+            exam_id = cur.lastrowid
         
         # 教員を検索または新規作成
         existing_professor = cur.execute('''
@@ -586,6 +586,112 @@ def exam_add_execute() -> Response:
 def uploaded_file(filename):
     """アップロードされたファイルを提供"""
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+# app.pyに追加するルート（既存のexam_add_execute()の後に追加）
+
+@app.route('/exam-edit/<int:exam_id>')
+@login_required
+def exam_edit(exam_id: int) -> str:
+    """試験編集ページ"""
+    cur = get_db().cursor()
+    
+    # 試験情報を取得
+    exam = cur.execute('''
+        SELECT 
+            e.exam_id,
+            e.subject_id,
+            e.exam_type_id,
+            e.exam_year,
+            e.instructions,
+            e.created_by,
+            s.subject_name,
+            s.subject_type,
+            s.semester,
+            s.grade_level,
+            s.department_id,
+            d.faculty_id,
+            f.faculty_name,
+            d.department_name,
+            et.exam_type_name
+        FROM Exams e
+        JOIN Subjects s ON e.subject_id = s.subject_id
+        JOIN Departments d ON s.department_id = d.department_id
+        JOIN Faculties f ON d.faculty_id = f.faculty_id
+        JOIN ExamTypes et ON e.exam_type_id = et.exam_type_id
+        WHERE e.exam_id = ?
+    ''', (exam_id,)).fetchone()
+    
+    if exam is None:
+        flash('指定された試験が見つかりません', 'error')
+        return redirect(url_for('exams'))
+    
+    # 作成者チェック
+    if exam['created_by'] != session['user_id']:
+        flash('この試験を編集する権限がありません', 'error')
+        return redirect(url_for('exam_detail', exam_id=exam_id))
+    
+    # 担当教員を取得
+    professors = cur.execute('''
+        SELECT p.professor_name
+        FROM ExamProfessors ep
+        JOIN Professors p ON ep.professor_id = p.professor_id
+        WHERE ep.exam_id = ?
+    ''', (exam_id,)).fetchall()
+    
+    professor_names = [p['professor_name'] for p in professors]
+    
+    # 試験問題ファイルを取得
+    questions = cur.execute('''
+        SELECT question_id, picture FROM ExamQuestions WHERE exam_id = ?
+    ''', (exam_id,)).fetchall()
+    
+    return render_template('exams/edit.html', 
+                         exam=exam, 
+                         professor_names=professor_names,
+                         questions=questions)
+
+@app.route('/exam-file-delete/<int:question_id>', methods=['DELETE'])
+@login_required
+def exam_file_delete(question_id: int):
+    """試験問題ファイル削除API"""
+    try:
+        con = get_db()
+        cur = con.cursor()
+        
+        # 問題ファイル情報と試験の作成者を取得
+        question_info = cur.execute('''
+            SELECT eq.picture, e.created_by, eq.exam_id
+            FROM ExamQuestions eq
+            JOIN Exams e ON eq.exam_id = e.exam_id
+            WHERE eq.question_id = ?
+        ''', (question_id,)).fetchone()
+        
+        if question_info is None:
+            return {'success': False, 'message': 'ファイルが見つかりません'}, 404
+        
+        # 権限チェック
+        if question_info['created_by'] != session['user_id']:
+            return {'success': False, 'message': 'このファイルを削除する権限がありません'}, 403
+        
+        # データベースから削除
+        cur.execute('DELETE FROM ExamQuestions WHERE question_id = ?', (question_id,))
+        
+        # 物理ファイルを削除
+        if question_info['picture']:
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], question_info['picture'])
+            if os.path.exists(file_path):
+                try:
+                    os.remove(file_path)
+                except OSError:
+                    # ファイル削除に失敗してもデータベースからは削除済みなので続行
+                    pass
+        
+        con.commit()
+        return {'success': True, 'message': 'ファイルを削除しました'}
+        
+    except Exception as e:
+        con.rollback()
+        return {'success': False, 'message': f'削除中にエラーが発生しました: {str(e)}'}, 500
 
 if __name__ == '__main__':
     app.run(debug=True)
