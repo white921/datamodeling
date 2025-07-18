@@ -1,4 +1,4 @@
-#!/usr/keio/Anaconda3-2024.10-1/bin/python
+#!/usr/bin/env python3
 """
 試験問題管理システム Web アプリケーション
 
@@ -18,7 +18,7 @@ from werkzeug import Response
 DATABASE: Final[str] = os.environ.get('DATABASE_PATH', 'database.db')
 
 # アップロードファイルの設定（相対パス）
-UPLOAD_FOLDER = 'static/uploads'
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff'}
 MAX_FILE_SIZE = 16 * 1024 * 1024  # 16MB
 
