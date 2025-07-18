@@ -120,19 +120,19 @@
                                             </div>
                                         {% elif file_extension in ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff'] %}
                                             <!-- 画像ファイルの場合 -->
-                                            <div class="mb-3">
+                                        <div class="mb-3">
                                                 <img src="{{ file_path }}" 
-                                                     class="img-fluid rounded shadow-sm" 
-                                                     alt="試験問題画像"
-                                                     style="max-height: 300px; cursor: pointer;"
+                                                 class="img-fluid rounded shadow-sm" 
+                                                 alt="試験問題画像"
+                                                 style="max-height: 300px; cursor: pointer;"
                                                      onclick="openImageModal('{{ file_path }}', '{{ exam[3] }} - 問題{{ loop.index }}')">
-                                            </div>
-                                            <p class="small text-muted mb-2">{{ question.picture }}</p>
+                                        </div>
+                                        <p class="small text-muted mb-2">{{ question.picture }}</p>
                                             <div class="d-grid gap-2">
-                                                <button class="btn btn-outline-primary btn-sm" 
+                                        <button class="btn btn-outline-primary btn-sm" 
                                                         onclick="openImageModal('{{ file_path }}', '{{ exam[3] }} - 問題{{ loop.index }}')">
-                                                    <i class="fas fa-expand"></i> 拡大表示
-                                                </button>
+                                            <i class="fas fa-expand"></i> 拡大表示
+                                        </button>
                                                 <a href="{{ file_path }}" download class="btn btn-outline-secondary btn-sm">
                                                     <i class="fas fa-download"></i> ダウンロード
                                                 </a>
@@ -546,17 +546,6 @@ function printExamQuestions() {
                     color: #666;
                     margin-bottom: 15px;
                 }
-                
-                @media print {
-                    .question-container {
-                        page-break-after: auto;
-                        page-break-inside: avoid;
-                    }
-                    
-                    .pdf-placeholder {
-                        border: 2px solid #000;
-                    }
-                }
             </style>
         </head>
         <body>
@@ -869,40 +858,44 @@ document.getElementById('detailDeleteModal').addEventListener('hidden.bs.modal',
     toggleDeleteButton();
 });
 </script>
+<script type="application/json" id="url-data">
+{
+    "exam_delete_ajax": "{{ url_for('exam_delete_ajax', exam_id=0) }}",
+    "exam_file_delete": "{{ url_for('exam_file_delete', question_id=0) }}",
+    "exams_list": "{{ url_for('exams') }}"
+}
+</script>
+
+<script>
+// JavaScript側でURL取得
+const urlData = JSON.parse(document.getElementById('url-data').textContent);
+const deleteUrl = urlData.exam_delete_ajax.replace('0', examId);
+
+fetch(deleteUrl, {
+    method: 'DELETE',
+    headers: {
+        'Content-Type': 'application/json',
+    }
+})
+</script>
 
 <style>
-    /* 印刷用スタイル */
-    @media print {
-        .btn, .modal, nav, .card-header h5 {
-            display: none !important;
-        }
-        
-        .card {
-            border: 1px solid #000 !important;
-            page-break-inside: avoid;
-        }
-        
-        .badge {
-            border: 1px solid #000 !important;
-            color: #000 !important;
-        }
-    }
 
-    /* カードホバー効果 */
-    .card:hover {
-        transform: translateY(-2px);
-        transition: transform 0.2s ease-in-out;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
+/* カードホバー効果 */
+.card:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
 
-    /* 画像ホバー効果 */
-    img[onclick] {
-        transition: transform 0.2s ease-in-out;
-    }
+/* 画像ホバー効果 */
+img[onclick] {
+    transition: transform 0.2s ease-in-out;
+}
 
-    img[onclick]:hover {
-        transform: scale(1.05);
-    }
+img[onclick]:hover {
+    transform: scale(1.05);
+}
 
     /* 詳細削除モーダルのスタイル */
     .modal-lg {
@@ -1018,37 +1011,7 @@ document.getElementById('detailDeleteModal').addEventListener('hidden.bs.modal',
         10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
         20%, 40%, 60%, 80% { transform: translateX(5px); }
     }
-
-    /* レスポンシブ対応 */
-    @media (max-width: 768px) {
-        .modal-lg {
-            max-width: 95%;
-            margin: 0.5rem;
-        }
-        
-        .files-grid {
-            grid-template-columns: 1fr;
-            gap: 10px;
-        }
-        
-        .file-item {
-            padding: 10px;
-        }
-        
-        .file-icon {
-            font-size: 20px;
-            margin-right: 10px;
-        }
-        
-        .exam-detail-info .row {
-            margin-bottom: 15px;
-        }
-        
-        .exam-detail-info .col-md-6 {
-            margin-bottom: 15px;
-        }
-    }
-
+    
     /* ホバー効果 */
     .btn-danger:not(:disabled):hover {
         transform: translateY(-1px);

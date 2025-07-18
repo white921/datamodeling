@@ -31,7 +31,6 @@
                             <label for="faculty_filter" class="form-label">学部名</label>
                             <input type="text" class="form-control" id="faculty_filter" name="faculty_filter" 
                                    value="{{ faculty_filter or '' }}" placeholder="例: 理工学部">
-                            <small class="form-text text-muted">部分一致検索（%ワイルドカード使用可）</small>
                         </div>
                         <div class="col-md-3">
                             <label for="department_filter" class="form-label">学科名</label>
@@ -61,10 +60,6 @@
                             <a href="{{ url_for('exams') }}" class="btn btn-outline-secondary btn-sm me-2">
                                 <i class="fas fa-undo"></i> 絞り込み解除
                             </a>
-                            <!-- モバイル用の検索ボタン -->
-                            <button type="submit" class="btn btn-primary btn-sm d-md-none">
-                                <i class="fas fa-search"></i> 検索実行
-                            </button>
                         </div>
                     </div>
                 </form>
@@ -548,25 +543,6 @@ document.addEventListener('keydown', function(e) {
     margin-bottom: 0.5rem;
 }
 
-/* モバイル対応の改善 */
-@media (max-width: 768px) {
-    .col-md-1 .btn {
-        margin-top: 0.5rem;
-    }
-    
-    .table-responsive {
-        font-size: 0.9rem;
-    }
-    
-    .badge {
-        font-size: 0.7rem;
-    }
-    
-    .btn-group .btn {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-    }
-}
 
 /* テーブル行のホバー効果 */
 tbody tr:hover {
@@ -667,20 +643,5 @@ tbody tr:hover {
     transform: none;
 }
 
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-    .modal-dialog {
-        margin: 1rem;
-    }
-    
-    .exam-info-card .row {
-        margin-bottom: 10px;
-    }
-    
-    .col-sm-3 {
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-}
 </style>
 {% endblock %}

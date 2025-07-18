@@ -365,25 +365,6 @@
             border-color: #bee5eb;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            
-            .form-row,
-            .form-row-three {
-                grid-template-columns: 1fr;
-            }
-            
-            .button-group {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn {
-                width: 200px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -411,7 +392,7 @@
             {% endif %}
         {% endwith %}
 
-        <form id="examForm" action="/exam-edit/{{ exam.exam_id }}" method="POST" enctype="multipart/form-data">
+        <form id="examForm" action="{{ url_for('exam_edit_update', exam_id=exam.exam_id) }}" method="POST" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="form-group">
                     <label for="faculty">学部 <span class="required">*</span></label>
@@ -770,7 +751,7 @@
             e.preventDefault();
             fileUploadArea.classList.remove('drag-over');
         });
-        
+
         fileUploadArea.addEventListener('drop', function(e) {
             e.preventDefault();
             fileUploadArea.classList.remove('drag-over');

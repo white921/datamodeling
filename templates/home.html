@@ -31,10 +31,10 @@
                 </p>
                 <a href="{{ url_for('exams') }}" class="btn btn-primary">
                     <i class="fas fa-search"></i> 試験を探す
-                </a>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
 
     <!-- 試験追加 -->
     <div class="col-md-6 mb-4">
@@ -48,11 +48,11 @@
                 </p>
                 <a href="{{ url_for('exam_add') }}" class="btn btn-warning">
                     <i class="fas fa-plus"></i> 試験を追加
-                </a>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
 <!-- システム概要と統計情報 -->
 <div class="row mt-5">
@@ -72,25 +72,17 @@
                 <strong>統計分析</strong> - 年度別、学部別などの多角的な統計情報
             </li>
             <li class="list-group-item">
-                <i class="fas fa-mobile-alt text-info"></i>
-                <strong>レスポンシブ対応</strong> - スマートフォンやタブレットからも利用可能
-            </li>
-            <li class="list-group-item">
                 <i class="fas fa-shield-alt text-danger"></i>
                 <strong>セキュアアクセス</strong> - keio.jpドメイン限定のセキュアなアクセス
             </li>
         </ul>
     </div>
-    
+
     <div class="col-md-4">
         <h3><i class="fas fa-chart-bar text-info"></i> クイック統計</h3>
         <div class="card stats-card">
             <div class="card-body">
                 {% if stats %}
-                <p class="card-text">
-                    <i class="fas fa-graduation-cap text-primary"></i>
-                    登録学部数: <span class="badge bg-primary">{{ stats.faculties }}</span>
-                </p>
                 <p class="card-text">
                     <i class="fas fa-book text-success"></i>
                     登録科目数: <span class="badge bg-success">{{ stats.subjects }}</span>
@@ -120,14 +112,14 @@
                     <i class="fas fa-users text-info"></i>
                     登録教員数: <span class="badge bg-info">3</span>
                 </p>
-                {% endif %}
+            {% endif %}
                 <div class="d-grid">
                     <a href="{{ url_for('exams') }}" class="btn btn-outline-primary btn-sm">
                         <i class="fas fa-chart-line"></i> 詳細を見る
                     </a>
                 </div>
             </div>
-        </div>
+                    </div>
         
         <!-- ユーザー情報カード -->
         <div class="card mt-3">
@@ -143,9 +135,9 @@
                 </p>
             </div>
         </div>
-    </div>
-</div>
-
+                        </div>
+                    </div>
+                    
 <!-- 使い方ガイド -->
 <div class="row mt-5">
     <div class="col-12">
@@ -167,56 +159,9 @@
                         </ol>
                         <div class="alert alert-info">
                             <i class="fas fa-lightbulb"></i> 
-                            <strong>検索のコツ:</strong> 科目名では部分一致検索が可能です。「%」をワイルドカードとして使用できます。
+                            <strong>検索のコツ:</strong> 科目名では部分一致検索が可能です。
                         </div>
                     </div>
-                </div>
-            </div>
-            
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingThree">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
-                        <i class="fas fa-mobile-alt me-2"></i> モバイル利用について
-                    </button>
-                </h2>
-                <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#usageAccordion">
-                    <div class="accordion-body">
-                        <p>このシステムはスマートフォンやタブレットからでも快適にご利用いただけます。</p>
-                        <ul>
-                            <li><strong>レスポンシブデザイン</strong> - 画面サイズに応じて最適化</li>
-                            <li><strong>タッチ操作対応</strong> - スマートフォンでの操作を考慮</li>
-                            <li><strong>高速表示</strong> - モバイル回線でも快適に動作</li>
-                        </ul>
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle"></i> 
-                            <strong>注意:</strong> 大きな画像ファイルの表示には通信環境によって時間がかかる場合があります。
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- クイックアクションボタン -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card bg-light">
-            <div class="card-body text-center">
-                <h5><i class="fas fa-rocket text-primary"></i> クイックアクション</h5>
-                <div class="d-flex flex-wrap justify-content-center gap-2">
-                    <a href="{{ url_for('exams') }}" class="btn btn-primary">
-                        <i class="fas fa-list"></i> すべての試験
-                    </a>
-                    <a href="{{ url_for('exam_add') }}" class="btn btn-warning">
-                        <i class="fas fa-plus-circle"></i> 試験追加
-                    </a>
-                    <a href="{{ url_for('exams') }}?year_filter=2024" class="btn btn-info">
-                        <i class="fas fa-calendar"></i> 2024年度試験
-                    </a>
-                    <a href="{{ url_for('exams') }}?faculty_filter=理工学部" class="btn btn-outline-primary">
-                        <i class="fas fa-cog"></i> 理工学部試験
-                    </a>
                 </div>
             </div>
         </div>

@@ -10,17 +10,15 @@ from typing import Final, Optional
 import unicodedata
 import os
 from datetime import datetime
-from functools import wraps
 from werkzeug.utils import secure_filename
-
 from flask import Flask, g, redirect, render_template, request, url_for, flash, session, send_from_directory
 from werkzeug import Response
 
-# データベースのファイル名（絶対パス対応）
-DATABASE: Final[str] = os.environ.get('DATABASE_PATH', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database.db'))
+# データベースのファイル名（相対パス）
+DATABASE: Final[str] = os.environ.get('DATABASE_PATH', 'database.db')
 
-# アップロードファイルの設定（絶対パス対応）
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'uploads')
+# アップロードファイルの設定（相対パス）
+UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff'}
 MAX_FILE_SIZE = 16 * 1024 * 1024  # 16MB
 
@@ -93,11 +91,14 @@ def verify_password(password: str, password_hash: str) -> bool:
 
 def login_required(f):
     """ログイン必須デコレータ"""
-    @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
             return redirect(url_for('login'))
         return f(*args, **kwargs)
+    # 手動でメタデータを設定
+    decorated_function.__name__ = f.__name__
+    decorated_function.__doc__ = f.__doc__
+    decorated_function.__module__ = f.__module__
     return decorated_function
 
 def has_control_character(s: str) -> bool:

@@ -291,25 +291,6 @@
             color: #dc3545;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            
-            .form-row,
-            .form-row-three {
-                grid-template-columns: 1fr;
-            }
-            
-            .button-group {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn {
-                width: 200px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -317,14 +298,14 @@
         <div class="header">
             <h1>新しい試験を作成</h1>
             <p>試験情報を入力してください</p>
-        </div>
+            </div>
 
         <div class="info-box">
             <h3>📝 入力ガイド</h3>
             <p>学部・学科は選択式です。科目名・教員名は自由入力で、新規科目・教員の登録も可能です。</p>
-        </div>
-
-        <form id="examForm" action="/exam-add" method="POST" enctype="multipart/form-data">
+                        </div>
+                        
+        <form id="examForm" action="{{ url_for('exam_add_execute') }}" method="POST" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="form-group">
                     <label for="faculty">学部 <span class="required">*</span></label>
@@ -340,25 +321,25 @@
                         <option value="8">環境情報学部</option>
                         <option value="9">看護医療学部</option>
                         <option value="10">薬学部</option>
-                    </select>
-                </div>
-
+                            </select>
+                        </div>
+                        
                 <div class="form-group">
                     <label for="department">学科 <span class="required">*</span></label>
                     <select id="department" name="department_id" required disabled>
                         <option value="">まず学部を選択してください</option>
-                    </select>
+                            </select>
                 </div>
-            </div>
-
+                        </div>
+                        
             <div class="form-group">
                 <label for="subject_name">科目名 <span class="required">*</span></label>
                 <div class="autocomplete-container">
                     <input type="text" id="subject_name" name="subject_name" placeholder="科目名を入力してください" required>
                     <div class="autocomplete-suggestions" id="subject-suggestions"></div>
-                </div>
-            </div>
-
+                        </div>
+                    </div>
+                    
             <div class="form-row-three">
                 <div class="form-group">
                     <label for="subject_type">科目種別 <span class="required">*</span></label>
@@ -381,8 +362,8 @@
                         <option value="秋学期前半">秋学期前半</option>
                         <option value="秋学期後半">秋学期後半</option>
                     </select>
-                </div>
-
+                        </div>
+                        
                 <div class="form-group">
                     <label for="grade_level">学年 <span class="required">*</span></label>
                     <select id="grade_level" name="grade_level" required>
@@ -392,17 +373,17 @@
                         <option value="3">3年</option>
                         <option value="4">4年</option>
                     </select>
-                </div>
-            </div>
+                                        </div>
+                                    </div>
 
             <div class="form-group">
                 <label for="professor_name">担当教員 <span class="required">*</span></label>
                 <div class="autocomplete-container">
                     <input type="text" id="professor_name" name="professor_name" placeholder="教員名を入力してください" required>
                     <div class="autocomplete-suggestions" id="professor-suggestions"></div>
-                </div>
-            </div>
-
+                        </div>
+                    </div>
+                    
             <div class="form-row">
                 <div class="form-group">
                     <label for="exam_type">試験種別 <span class="required">*</span></label>
@@ -415,19 +396,19 @@
                         <option value="5">小テスト</option>
                         <option value="6">レポート試験</option>
                     </select>
-                </div>
-
+                        </div>
+                        
                 <div class="form-group">
                     <label for="exam_year">年度 <span class="required">*</span></label>
                     <input type="number" id="exam_year" name="exam_year" min="2020" max="2030" value="2024" required>
-                </div>
-            </div>
-
+                        </div>
+                    </div>
+                    
             <div class="form-group">
                 <label for="instructions">注意事項・備考</label>
                 <textarea id="instructions" name="instructions" placeholder="試験に関する注意事項や備考を入力してください"></textarea>
-            </div>
-
+                                    </div>
+                                    
             <div class="form-group">
                 <label for="exam_files">試験問題ファイル</label>
                 <div class="file-upload-area" id="file-upload-area">
@@ -435,7 +416,7 @@
                         <input type="file" id="exam_files" name="exam_files" multiple accept=".pdf,.png,.jpg,.jpeg,.gif,.bmp,.tiff">
                         <button type="button" class="file-input-button" onclick="document.getElementById('exam_files').click()">
                             📁 ファイルを選択
-                        </button>
+                                        </button>
                     </div>
                     <p style="margin: 10px 0 0 0; color: #6c757d; font-size: 0.8em;">
                         または、ファイルをここにドラッグ&ドロップ
@@ -452,7 +433,7 @@
             <div class="button-group">
                 <button type="submit" class="btn btn-primary">📝 試験を作成</button>
                 <a href="/exams" class="btn btn-secondary">キャンセル</a>
-            </div>
+        </div>
         </form>
     </div>
 
